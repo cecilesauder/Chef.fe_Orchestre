@@ -28,7 +28,7 @@ Puis ouvrir <http://localhost:8000>.
 - **Barre de mesure, sections et conducteur** : permettent d’aller directement à un endroit du morceau.
 - **Guide 4/4** : rappelle les principaux gestes de la battue.
 - **Détails** : ouvre une vue de travail consacrée à la nuance, à l’amplitude de la battue, au geste de la main gauche, aux départs et aux pupitres à écouter.
-- **Exercice** : mesure automatiquement la précision des taps de l’utilisateur par rapport au tempo cible.
+- **Exercice** : mesure automatiquement la précision des taps de l’utilisateur par rapport au tempo cible et fournit un retour visuel en temps réel : « dans le tempo », « en avance » ou « en retard », avec l’écart en millisecondes et un code couleur.
 - **Historique** : conserve localement les sessions terminées pour suivre la moyenne, le meilleur tap et le nombre de sessions.
 
 ## Parcours conseillé
@@ -38,7 +38,7 @@ Puis ouvrir <http://localhost:8000>.
 3. Utiliser **Détails** pour étudier la nuance, l’amplitude recommandée, le geste de la main gauche et les pupitres à préparer.
 4. Charger éventuellement un MP3/WAV local. Pendant sa lecture, sa position réelle pilote la mesure et le prompteur via `audio.currentTime`.
 5. Utiliser **Tap tempo** si le tempo doit être défini à partir de pulsations jouées par l’utilisateur.
-6. Ouvrir **Exercice**, attendre la préparation, puis taper avec la touche Espace ou le bouton prévu. Arrêter la session pour l’enregistrer dans l’historique.
+6. Ouvrir **Exercice**, attendre la préparation, puis taper avec la touche Espace ou le bouton prévu. Observer le retour instantané sous le score : vert lorsque la pulsation est dans la fenêtre, bleu en cas d’avance et rouge en cas de retard. Arrêter la session pour l’enregistrer dans l’historique.
 
 ## Corrections récentes
 
@@ -50,7 +50,7 @@ Puis ouvrir <http://localhost:8000>.
 - Les recalages audio automatiques à chaque temps ont été supprimés. Un repositionnement n’est effectué que lors d’un démarrage, d’un reset ou d’un déplacement volontaire vers une mesure.
 - Le **Tap tempo** utilise les dernières pulsations, une médiane résistante aux taps accidentels et une plage sécurisée de 40 à 180 BPM. Il ajuste la battue, le métronome, le synthétiseur et la vitesse de l’audio importé.
 - La vue détaillée se met à jour avec la mesure active et propose un repère pédagogique distinct pour le geste de la main gauche et l’équilibre des pupitres.
-- Le mode exercice attribue une note sur 100, affiche l’écart en millisecondes, le meilleur score et la série de taps réussis. La touche Espace et le bouton d’exercice sont utilisables comme geste de référence.
+- Le mode exercice attribue une note sur 100, affiche l’écart en millisecondes, le meilleur score et la série de taps réussis. Pendant toute la session, un indicateur compare la position courante au battement théorique et colore le bouton de tap : vert « dans le tempo », bleu « en avance », rouge « en retard ». La touche Espace et le bouton d’exercice sont utilisables comme geste de référence.
 - L’historique des exercices est stocké uniquement dans le `localStorage` du navigateur. Il affiche les dernières sessions et peut être effacé avec le bouton **Effacer** ; aucune donnée n’est envoyée au serveur.
 
 ## Choix techniques
@@ -74,7 +74,7 @@ Les fichiers MP3/WAV sont lus localement par le navigateur et ne sont pas envoy�
 
 ## Validation actuelle
 
-La version publiée a été vérifiée dans Chromium headless avec un chargement complet de la page et sans erreur JavaScript. Le scénario fonctionnel vérifié couvre l’ouverture de la vue détaillée, le calcul du **Tap tempo** à 120 BPM, le démarrage d’un exercice, le calcul d’une note et l’enregistrement d’une session dans l’historique local.
+La version publiée a été vérifiée dans Chromium headless avec un chargement complet de la page et sans erreur JavaScript. Le scénario fonctionnel vérifié couvre l’ouverture de la vue détaillée, le calcul du **Tap tempo** à 120 BPM, le démarrage d’un exercice, le calcul d’une note, l’enregistrement d’une session dans l’historique local et la présence du nouvel indicateur de feedback temps réel. La vérification de syntaxe JavaScript passe également avec `node --check`.
 
 ## Crédits et droits
 

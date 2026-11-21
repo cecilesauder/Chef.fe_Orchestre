@@ -896,6 +896,35 @@
       box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2);
     }
 
+    .exercise-tap-btn.on-time {
+      background: var(--accent-emerald);
+      border-color: var(--accent-emerald);
+    }
+
+    .exercise-tap-btn.early {
+      background: var(--accent-sky);
+      border-color: var(--accent-sky);
+    }
+
+    .exercise-tap-btn.late {
+      background: var(--accent-rose);
+      border-color: var(--accent-rose);
+      color: #fff;
+    }
+
+    .exercise-live-feedback {
+      min-height: 24px;
+      margin-top: 4px;
+      font-size: 14px;
+      font-weight: 800;
+      font-family: ui-monospace, monospace;
+      transition: color 0.12s ease;
+    }
+
+    .exercise-live-feedback.on-time { color: var(--accent-emerald); }
+    .exercise-live-feedback.early { color: var(--accent-sky); }
+    .exercise-live-feedback.late { color: var(--accent-rose); }
+
     .exercise-history {
       margin-top: 14px;
       border-top: 1px solid var(--border-subtle);
@@ -1301,6 +1330,7 @@
       <div class="exercise-hero">
         <div class="exercise-score" id="exerciseScore">—</div>
         <div class="exercise-status" id="exerciseStatus">Lancez l’exercice puis tapez sur le bouton ou avec la touche Espace.</div>
+        <div class="exercise-live-feedback" id="exerciseLiveFeedback">—</div>
       </div>
       <div class="exercise-stats">
         <div class="exercise-stat"><strong id="exerciseLastError">—</strong><span>Dernier écart</span></div>
@@ -1876,6 +1906,7 @@
     const exerciseTapBtn = document.getElementById("exerciseTapBtn");
     const exerciseScore = document.getElementById("exerciseScore");
     const exerciseStatus = document.getElementById("exerciseStatus");
+    const exerciseLiveFeedback = document.getElementById("exerciseLiveFeedback");
     const exerciseLastError = document.getElementById("exerciseLastError");
     const exerciseBestScore = document.getElementById("exerciseBestScore");
     const exerciseStreak = document.getElementById("exerciseStreak");
@@ -2060,6 +2091,11 @@
       exerciseStreak.textContent = exercise.streak;
       exerciseTapBtn.disabled = !exercise.active;
       exerciseTapBtn.classList.toggle("active", exercise.active);
+      if (!exercise.active) {
+        exerciseTapBtn.classList.remove("on-time", "early", "late");
+        exerciseLiveFeedback.className = "exercise-live-feedback";
+        exerciseLiveFeedback.textContent = "—";
+      }
       startExerciseBtn.textContent = exercise.active ? "Arrêter l’exercice" : "Démarrer l’exercice";
     }
 
@@ -2086,6 +2122,31 @@
         : `Préparation de 4 temps… tempo cible : ${Math.round(state.bpm * state.speed)} BPM.`;
       if (!state.isPlaying) startPlayback();
       updateExerciseUI();
+    }
+
+    function updateExerciseLiveFeedback(now) {
+      if (!exercise.active) return;
+      if (now < exercise.startAt) {
+        exerciseLiveFeedback.className = "exercise-live-feedback";
+        exerciseLiveFeedback.textContent = `Départ dans ${Math.max(0, ((exercise.startAt - now) / 1000)).toFixed(1)} s`;
+        exerciseTapBtn.classList.remove("on-time", "early", "late");
+        return;
+      }
+
+      const beatMs = 60000 / (state.bpm * state.speed);
+      const elapsed = now - exercise.startAt;
+      const nearestBeat = Math.max(0, Math.round(elapsed / beatMs));
+      const delta = now - (exercise.startAt + nearestBeat * beatMs);
+      const absDelta = Math.abs(delta);
+      const onTimeLimit = Math.max(35, beatMs * 0.08);
+      const className = absDelta <= onTimeLimit ? "on-time" : (delta < 0 ? "early" : "late");
+      const label = absDelta <= onTimeLimit
+        ? "DANS LE TEMPO"
+        : (delta < 0 ? `EN AVANCE ${Math.round(absDelta)} ms` : `EN RETARD ${Math.round(absDelta)} ms`);
+      exerciseLiveFeedback.className = `exercise-live-feedback ${className}`;
+      exerciseLiveFeedback.textContent = label;
+      exerciseTapBtn.classList.remove("on-time", "early", "late");
+      exerciseTapBtn.classList.add(className);
     }
 
     function scoreExerciseTap() {
@@ -2124,6 +2185,7 @@
           ? `Bon geste — ${score}/100, resserrez légèrement le ${errorMs >= 0 ? "retard" : "avance"}.`
           : `À corriger — ${score}/100, écart de ${Math.round(absError)} ms.`;
       updateExerciseUI();
+      updateExerciseLiveFeedback(performance.now());
     }
 
     function renderDetailView() {
@@ -2491,6 +2553,7 @@
       if (state.ictusFlash > 0) {
         state.ictusFlash = Math.max(0, state.ictusFlash - dt * 2.8);
       }
+      updateExerciseLiveFeedback(now);
 
       if (state.isPlaying) {
         const hasCustomAudio = audioEngine.hasCustomFile && audioEngine.customAudio;
