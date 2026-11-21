@@ -29,6 +29,7 @@ Puis ouvrir <http://localhost:8000>.
 - **Guide 4/4** : rappelle les principaux gestes de la battue.
 - **Détails** : ouvre une vue de travail consacrée à la nuance, à l’amplitude de la battue, au geste de la main gauche, aux départs et aux pupitres à écouter.
 - **Exercice** : mesure automatiquement la précision des taps de l’utilisateur par rapport au tempo cible.
+- **Historique** : conserve localement les sessions terminées pour suivre la moyenne, le meilleur tap et le nombre de sessions.
 
 ## Corrections récentes
 
@@ -41,6 +42,7 @@ Puis ouvrir <http://localhost:8000>.
 - Le **Tap tempo** utilise les dernières pulsations, une médiane résistante aux taps accidentels et une plage sécurisée de 40 à 180 BPM. Il ajuste la battue, le métronome, le synthétiseur et la vitesse de l’audio importé.
 - La vue détaillée se met à jour avec la mesure active et propose un repère pédagogique distinct pour le geste de la main gauche et l’équilibre des pupitres.
 - Le mode exercice attribue une note sur 100, affiche l’écart en millisecondes, le meilleur score et la série de taps réussis. La touche Espace et le bouton d’exercice sont utilisables comme geste de référence.
+- L’historique des exercices est stocké uniquement dans le `localStorage` du navigateur. Il affiche les dernières sessions et peut être effacé avec le bouton **Effacer** ; aucune donnée n’est envoyée au serveur.
 
 ## Choix techniques
 

@@ -896,6 +896,63 @@
       box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2);
     }
 
+    .exercise-history {
+      margin-top: 14px;
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 12px;
+    }
+
+    .exercise-history-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 7px;
+    }
+
+    .exercise-history-header strong {
+      color: var(--text-muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .exercise-history-summary {
+      color: var(--accent-sky);
+      font-size: 11px;
+      margin-bottom: 7px;
+    }
+
+    .exercise-history-list {
+      display: grid;
+      gap: 5px;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .exercise-history-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 8px;
+      align-items: center;
+      padding: 6px 8px;
+      border-radius: 6px;
+      background: var(--bg-card);
+      color: var(--text-muted);
+      font-size: 11px;
+    }
+
+    .exercise-history-row strong {
+      color: var(--text-main);
+      font-family: ui-monospace, monospace;
+    }
+
+    .exercise-history-empty {
+      color: var(--text-dim);
+      font-size: 11px;
+      padding: 5px 0;
+    }
+
     @media (max-width: 640px) {
       .detail-grid {
         grid-template-columns: 1fr;
@@ -1253,6 +1310,14 @@
       <button id="startExerciseBtn" class="btn-play" style="width:100%;">Démarrer l’exercice</button>
       <button id="exerciseTapBtn" class="exercise-tap-btn" disabled>Je tape maintenant — Espace</button>
       <p class="detail-muted" style="margin-top:10px;">Le score compare chaque tap au battement attendu. Jusqu’à 35 ms d’écart : précision excellente ; au-delà de 175 ms : tap hors tempo.</p>
+      <section class="exercise-history">
+        <div class="exercise-history-header">
+          <strong>Historique des sessions</strong>
+          <button id="clearExerciseHistoryBtn" title="Effacer l’historique local">Effacer</button>
+        </div>
+        <div class="exercise-history-summary" id="exerciseHistorySummary">Aucune session enregistrée.</div>
+        <div class="exercise-history-list" id="exerciseHistoryList"></div>
+      </section>
     </div>
   </div>
 
@@ -1814,6 +1879,9 @@
     const exerciseLastError = document.getElementById("exerciseLastError");
     const exerciseBestScore = document.getElementById("exerciseBestScore");
     const exerciseStreak = document.getElementById("exerciseStreak");
+    const clearExerciseHistoryBtn = document.getElementById("clearExerciseHistoryBtn");
+    const exerciseHistorySummary = document.getElementById("exerciseHistorySummary");
+    const exerciseHistoryList = document.getElementById("exerciseHistoryList");
     const toastMsg = document.getElementById("toastMsg");
     let toastTimer = null;
     let tapTimes = [];
@@ -1826,7 +1894,8 @@
       totalScore: 0,
       bestScore: 0,
       streak: 0,
-      bestStreak: 0
+      bestStreak: 0,
+      sessionSaved: false
     };
 
     function showToast(msg) {
@@ -1925,6 +1994,62 @@
     // =========================================================================
     // 5. MISE À JOUR DE L'INTERFACE SYNCHRONISÉE
     // =========================================================================
+    const EXERCISE_HISTORY_KEY = "chef-orchestre.exercise-history.v1";
+
+    function getExerciseHistory() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(EXERCISE_HISTORY_KEY) || "[]");
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function renderExerciseHistory() {
+      const history = getExerciseHistory();
+      if (!history.length) {
+        exerciseHistorySummary.textContent = "Aucune session enregistrée.";
+        exerciseHistoryList.innerHTML = '<div class="exercise-history-empty">Terminez un exercice pour créer votre premier repère.</div>';
+        return;
+      }
+
+      const average = Math.round(history.reduce((sum, item) => sum + item.score, 0) / history.length);
+      const best = Math.max(...history.map(item => item.best));
+      exerciseHistorySummary.textContent = `${history.length} session${history.length > 1 ? "s" : ""} • moyenne ${average}/100 • meilleur tap ${best}/100`;
+      exerciseHistoryList.innerHTML = history.slice(0, 12).map(item => {
+        const date = new Date(item.date);
+        const label = Number.isNaN(date.getTime()) ? "Session" : date.toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" });
+        return `<div class="exercise-history-row"><span>${label} · ${item.attempts} taps</span><strong>${item.score}/100</strong><span>max ${item.best}</span></div>`;
+      }).join("");
+    }
+
+    function saveExerciseSession() {
+      if (exercise.sessionSaved || !exercise.attempts) return;
+      const history = getExerciseHistory();
+      history.unshift({
+        date: new Date().toISOString(),
+        score: Math.round(exercise.totalScore / exercise.attempts),
+        best: exercise.bestScore,
+        attempts: exercise.attempts,
+        streak: exercise.bestStreak,
+        bpm: Math.round(state.bpm * state.speed)
+      });
+      try {
+        localStorage.setItem(EXERCISE_HISTORY_KEY, JSON.stringify(history.slice(0, 30)));
+      } catch (error) {
+        console.warn("Historique local indisponible.", error);
+      }
+      exercise.sessionSaved = true;
+      renderExerciseHistory();
+    }
+
+    function finishExerciseSession() {
+      if (!exercise.active) return;
+      saveExerciseSession();
+      exercise.active = false;
+      updateExerciseUI();
+    }
+
     function updateExerciseUI() {
       if (!exercise.attempts) {
         exerciseScore.textContent = "—";
@@ -1940,6 +2065,7 @@
 
     function startOrStopExercise() {
       if (exercise.active) {
+        saveExerciseSession();
         exercise.active = false;
         exerciseStatus.textContent = `Exercice arrêté — moyenne ${exercise.attempts ? Math.round(exercise.totalScore / exercise.attempts) : 0}/100.`;
         updateExerciseUI();
@@ -1950,6 +2076,7 @@
       exercise.attempts = 0;
       exercise.totalScore = 0;
       exercise.streak = 0;
+      exercise.sessionSaved = false;
       exercise.lastBeat = -1;
       const beatMs = 60000 / (state.bpm * state.speed);
       const untilNextBeat = state.isPlaying ? Math.max(80, (1 - state.beatProgress) * beatMs) : beatMs * 4;
@@ -2511,22 +2638,26 @@
 
     openExerciseBtn.addEventListener("click", () => {
       exerciseModal.classList.remove("hidden");
+      renderExerciseHistory();
       updateExerciseUI();
     });
     closeExerciseBtn.addEventListener("click", () => {
-      exercise.active = false;
+      finishExerciseSession();
       exerciseModal.classList.add("hidden");
-      updateExerciseUI();
     });
     exerciseModal.addEventListener("click", (e) => {
       if (e.target === exerciseModal) {
-        exercise.active = false;
+        finishExerciseSession();
         exerciseModal.classList.add("hidden");
-        updateExerciseUI();
       }
     });
     startExerciseBtn.addEventListener("click", startOrStopExercise);
     exerciseTapBtn.addEventListener("click", scoreExerciseTap);
+    clearExerciseHistoryBtn.addEventListener("click", () => {
+      localStorage.removeItem(EXERCISE_HISTORY_KEY);
+      renderExerciseHistory();
+      showToast("Historique des exercices effacé.");
+    });
 
     // =========================================================================
     // 9. DÉMARRAGE AU CHARGEMENT
