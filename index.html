@@ -925,6 +925,23 @@
     .exercise-live-feedback.early { color: var(--accent-sky); }
     .exercise-live-feedback.late { color: var(--accent-rose); }
 
+    .exercise-feedback-guide {
+      display: grid;
+      gap: 6px;
+      margin-top: 12px;
+      padding: 10px 12px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      background: rgba(15, 23, 42, 0.28);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .exercise-feedback-guide strong { font-weight: 800; }
+    .exercise-feedback-guide .guide-on-time { color: var(--accent-emerald); }
+    .exercise-feedback-guide .guide-early { color: var(--accent-sky); }
+    .exercise-feedback-guide .guide-late { color: var(--accent-rose); }
+
     .exercise-history {
       margin-top: 14px;
       border-top: 1px solid var(--border-subtle);
@@ -1340,6 +1357,11 @@
       <button id="startExerciseBtn" class="btn-play" style="width:100%;">Démarrer l’exercice</button>
       <button id="exerciseTapBtn" class="exercise-tap-btn" disabled>Je tape maintenant — Espace</button>
       <p class="detail-muted" style="margin-top:10px;">Le score compare chaque tap au battement attendu. Jusqu’à 35 ms d’écart : précision excellente ; au-delà de 175 ms : tap hors tempo.</p>
+      <div class="exercise-feedback-guide" aria-label="Légende des retours visuels">
+        <div class="guide-on-time"><strong>Vert — dans le tempo :</strong> le geste est proche du battement attendu.</div>
+        <div class="guide-early"><strong>Bleu — en avance :</strong> le geste arrive avant le battement ; attendez légèrement.</div>
+        <div class="guide-late"><strong>Rouge — en retard :</strong> le geste arrive après le battement ; anticipez légèrement.</div>
+      </div>
       <section class="exercise-history">
         <div class="exercise-history-header">
           <strong>Historique des sessions</strong>

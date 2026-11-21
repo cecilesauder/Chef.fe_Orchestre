@@ -40,6 +40,16 @@ Puis ouvrir <http://localhost:8000>.
 5. Utiliser **Tap tempo** si le tempo doit être défini à partir de pulsations jouées par l’utilisateur.
 6. Ouvrir **Exercice**, attendre la préparation, puis taper avec la touche Espace ou le bouton prévu. Observer le retour instantané sous le score : vert lorsque la pulsation est dans la fenêtre, bleu en cas d’avance et rouge en cas de retard. Arrêter la session pour l’enregistrer dans l’historique.
 
+### Interpréter les couleurs du retour tempo
+
+Le feedback est une aide immédiate pour corriger le geste avant de consulter la note détaillée :
+
+- **Vert — dans le tempo** : le tap est suffisamment proche du battement attendu. Conservez le même placement.
+- **Bleu — en avance** : le tap arrive avant le battement théorique. Retenez légèrement le geste ou attendez un peu plus avant de taper.
+- **Rouge — en retard** : le tap arrive après le battement théorique. Préparez et lancez le geste un peu plus tôt.
+
+La couleur apparaît à la fois dans le message de feedback et sur le bouton **Je tape maintenant**. Le nombre de millisecondes indique l’ampleur de l’écart ; le score sur 100 et le dernier écart servent ensuite à mesurer la précision de la session.
+
 ## Corrections récentes
 
 - La **main gauche est maintenant affichée à gauche** et la **main droite avec la baguette à droite**, conformément à la lecture naturelle du chef depuis le point de vue de l’utilisateur.
@@ -50,7 +60,7 @@ Puis ouvrir <http://localhost:8000>.
 - Les recalages audio automatiques à chaque temps ont été supprimés. Un repositionnement n’est effectué que lors d’un démarrage, d’un reset ou d’un déplacement volontaire vers une mesure.
 - Le **Tap tempo** utilise les dernières pulsations, une médiane résistante aux taps accidentels et une plage sécurisée de 40 à 180 BPM. Il ajuste la battue, le métronome, le synthétiseur et la vitesse de l’audio importé.
 - La vue détaillée se met à jour avec la mesure active et propose un repère pédagogique distinct pour le geste de la main gauche et l’équilibre des pupitres.
-- Le mode exercice attribue une note sur 100, affiche l’écart en millisecondes, le meilleur score et la série de taps réussis. Pendant toute la session, un indicateur compare la position courante au battement théorique et colore le bouton de tap : vert « dans le tempo », bleu « en avance », rouge « en retard ». La touche Espace et le bouton d’exercice sont utilisables comme geste de référence.
+- Le mode exercice attribue une note sur 100, affiche l’écart en millisecondes, le meilleur score et la série de taps réussis. Pendant toute la session, un indicateur compare la position courante au battement théorique et colore le bouton de tap : vert « dans le tempo », bleu « en avance », rouge « en retard ». Une légende intégrée explique comment corriger chaque situation. La touche Espace et le bouton d’exercice sont utilisables comme geste de référence.
 - L’historique des exercices est stocké uniquement dans le `localStorage` du navigateur. Il affiche les dernières sessions et peut être effacé avec le bouton **Effacer** ; aucune donnée n’est envoyée au serveur.
 
 ## Choix techniques
