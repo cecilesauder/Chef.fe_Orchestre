@@ -31,11 +31,15 @@ Puis ouvrir <http://localhost:8000>.
 
 - La **main gauche est maintenant affichée à gauche** et la **main droite avec la baguette à droite**, conformément à la lecture naturelle du chef depuis le point de vue de l’utilisateur.
 - La lecture visuelle est maintenant **indépendante de Web Audio** : si le contexte audio est bloqué par un navigateur mobile, une webview ou une permission, la baguette, les mesures et le prompteur continuent malgré tout à défiler.
-- L’initialisation et la reprise de Web Audio sont protégées contre les erreurs afin qu’un problème audio ne puisse plus interrompre la boucle d’animation.
+- Le chargement d’un **MP3/WAV attend ses métadonnées avant de chercher une position**, ce qui évite l’erreur fréquente de `currentTime` sur mobile.
+- Les erreurs de décodage, de lecture automatique ou de synchronisation du fichier audio sont isolées : elles ne peuvent plus arrêter la boucle de direction.
+- L’audio importé reste synchronisé par mesure lorsqu’il est disponible, tandis que le conducteur conserve sa propre horloge de battue.
 
 ## Choix techniques
 
 Le projet est volontairement autonome : une seule page HTML contient la structure, les styles et le JavaScript. L’audio de démonstration est généré avec la **Web Audio API** ; aucun fichier audio n’est inclus dans le dépôt. Les fichiers importés par l’utilisateur restent locaux à son navigateur.
+
+La compatibilité audio est progressive : l’application reste utilisable pour travailler les gestes et les indications même si un navigateur refuse le son, si le fichier n’est pas encore prêt ou si le format audio n’est pas décodable.
 
 ## Pistes d’amélioration
 

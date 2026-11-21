@@ -1239,6 +1239,7 @@
         this.customAudio = null;
         this.customUrl = null;
         this.hasCustomFile = false;
+        this.customAudioReady = false;
       }
 
       init() {
@@ -1368,15 +1369,30 @@
         this.customUrl = URL.createObjectURL(file);
         if (!this.customAudio) {
           this.customAudio = new Audio();
+          this.customAudio.preload = "auto";
+          this.customAudio.addEventListener("loadedmetadata", () => {
+            this.customAudioReady = true;
+          });
+          this.customAudio.addEventListener("error", () => {
+            this.customAudioReady = false;
+            console.warn("Le fichier audio ne peut pas être décodé.");
+          });
         }
+        this.customAudioReady = false;
         this.customAudio.src = this.customUrl;
+        this.customAudio.load();
         this.hasCustomFile = true;
       }
 
       clearCustomFile() {
         if (this.customAudio) {
           this.customAudio.pause();
-          this.customAudio.currentTime = 0;
+          try {
+            this.customAudio.currentTime = 0;
+          } catch (error) {
+            console.warn("Impossible de remettre l’audio à zéro.", error);
+          }
+          this.customAudioReady = false;
         }
         if (this.customUrl) {
           URL.revokeObjectURL(this.customUrl);
@@ -1389,14 +1405,31 @@
         if (!this.hasCustomFile || !this.customAudio) return;
         const secPerMeasure = (60 / BASE_BPM) * 4;
         const targetTime = Math.max(0, (measure - 1) * secPerMeasure);
-        this.customAudio.playbackRate = speed;
-        if (Math.abs(this.customAudio.currentTime - targetTime) > 0.35) {
-          this.customAudio.currentTime = targetTime;
-        }
-        if (shouldPlay && this.customAudio.paused) {
-          this.customAudio.play().catch(() => {});
-        } else if (!shouldPlay && !this.customAudio.paused) {
-          this.customAudio.pause();
+
+        try {
+          this.customAudio.playbackRate = speed;
+
+          // currentTime n’est pas toujours modifiable avant loadedmetadata
+          // (notamment dans les navigateurs mobiles). La partition continue
+          // tout de même son horloge visuelle pendant que le fichier se prépare.
+          if (this.customAudioReady && Number.isFinite(this.customAudio.duration) &&
+              Math.abs(this.customAudio.currentTime - targetTime) > 0.35) {
+            this.customAudio.currentTime = Math.min(targetTime, this.customAudio.duration);
+          }
+
+          if (shouldPlay && this.customAudio.paused) {
+            const playRequest = this.customAudio.play();
+            if (playRequest && typeof playRequest.catch === "function") {
+              playRequest.catch(error => {
+                console.warn("La lecture MP3 est refusée, mais la battue continue.", error);
+              });
+            }
+          } else if (!shouldPlay && !this.customAudio.paused) {
+            this.customAudio.pause();
+          }
+        } catch (error) {
+          // Un souci avec le média ne doit jamais arrêter la boucle de direction.
+          console.warn("Synchronisation MP3 ignorée ; la battue continue.", error);
         }
       }
     }
@@ -1744,13 +1777,21 @@
     // =========================================================================
     function triggerBeat(measure, beatIndex, isCountIn) {
       state.ictusFlash = 1.0;
-      audioEngine.playClick(beatIndex, isCountIn);
-      if (!isCountIn) {
-        audioEngine.playOrchestraBeat(measure, beatIndex, state.speed);
-        if (beatIndex === 0) {
-          audioEngine.syncCustomAudio(measure, state.speed, true);
+
+      // L’audio est un accompagnement : aucune erreur audio ne doit empêcher
+      // l’horloge visuelle et les indications de direction de progresser.
+      try {
+        audioEngine.playClick(beatIndex, isCountIn);
+        if (!isCountIn) {
+          audioEngine.playOrchestraBeat(measure, beatIndex, state.speed);
+          if (beatIndex === 0) {
+            audioEngine.syncCustomAudio(measure, state.speed, true);
+          }
         }
+      } catch (error) {
+        console.warn("Audio indisponible ; la partition et la battue continuent.", error);
       }
+
       updateUI(beatIndex === 0 && !isCountIn);
     }
 
