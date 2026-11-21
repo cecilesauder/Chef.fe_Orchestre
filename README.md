@@ -27,6 +27,7 @@ Puis ouvrir <http://localhost:8000>.
 - **MP3/WAV** : charge un enregistrement local pour remplacer le synthétiseur intégré.
 - **Barre de mesure, sections et conducteur** : permettent d’aller directement à un endroit du morceau.
 - **Guide 4/4** : rappelle les principaux gestes de la battue.
+- **Détails** : ouvre une vue de travail consacrée à la nuance, à l’amplitude de la battue, au geste de la main gauche, aux départs et aux pupitres à écouter.
 
 ## Corrections récentes
 
@@ -37,6 +38,7 @@ Puis ouvrir <http://localhost:8000>.
 - Lorsque le MP3 joue, **`audio.currentTime` devient l’horloge principale** : il pilote la mesure, le temps, la progression de la baguette et le prompteur. L’horloge interne ne sert plus que de repli pendant le chargement ou si la lecture est refusée.
 - Les recalages audio automatiques à chaque temps ont été supprimés. Un repositionnement n’est effectué que lors d’un démarrage, d’un reset ou d’un déplacement volontaire vers une mesure.
 - Le **Tap tempo** utilise les dernières pulsations, une médiane résistante aux taps accidentels et une plage sécurisée de 40 à 180 BPM. Il ajuste la battue, le métronome, le synthétiseur et la vitesse de l’audio importé.
+- La vue détaillée se met à jour avec la mesure active et propose un repère pédagogique distinct pour le geste de la main gauche et l’équilibre des pupitres.
 
 ## Choix techniques
 
