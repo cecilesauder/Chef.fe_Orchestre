@@ -1,0 +1,1948 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Studio de Direction — The Hanging Tree (ONM)</title>
+  <style>
+    :root {
+      --bg-app: #090d16;
+      --bg-surface: #0f172a;
+      --bg-elevated: #1e293b;
+      --bg-card: #0b1120;
+      --border-subtle: #1e293b;
+      --border-strong: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --accent-amber: #f59e0b;
+      --accent-amber-soft: rgba(245, 158, 11, 0.16);
+      --accent-sky: #38bdf8;
+      --accent-emerald: #10b981;
+      --accent-rose: #f43f5e;
+      --accent-indigo: #818cf8;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      height: 100dvh;
+      max-height: 100dvh;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background-color: var(--bg-app);
+      color: var(--text-main);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Protection stricte contre tout SVG géant */
+    svg {
+      display: inline-block;
+      vertical-align: middle;
+      flex-shrink: 0;
+    }
+
+    button, label.btn {
+      font-family: inherit;
+      cursor: pointer;
+      border: 1px solid var(--border-strong);
+      background-color: var(--bg-elevated);
+      color: var(--text-main);
+      border-radius: var(--radius-sm);
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: transform 0.1s ease, background-color 0.15s ease, border-color 0.15s ease;
+      user-select: none;
+    }
+
+    button:active, label.btn:active {
+      transform: scale(0.96);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* =====================================================================
+       ZONE 1 : HEADER COMPACT FIXE EN HAUT
+       ===================================================================== */
+    .app-header {
+      flex-shrink: 0;
+      background-color: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 8px 12px;
+      z-index: 20;
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .header-top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #f59e0b, #ea580c);
+      color: #090d16;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .brand-title {
+      font-size: 14px;
+      font-weight: 800;
+      margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .brand-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin: 0;
+    }
+
+    .transport-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-play {
+      background-color: var(--accent-amber);
+      border-color: var(--accent-amber);
+      color: #090d16;
+      font-weight: 800;
+      padding: 7px 12px;
+    }
+
+    .btn-play:hover {
+      background-color: #fbbf24;
+    }
+
+    .speed-group {
+      display: inline-flex;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .speed-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      padding: 4px 7px;
+      font-size: 11px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    .speed-btn.active {
+      background-color: var(--bg-elevated);
+      color: var(--accent-amber);
+    }
+
+    .btn-toggle-on {
+      border-color: rgba(245, 158, 11, 0.5);
+      background-color: rgba(245, 158, 11, 0.14);
+      color: #fcd34d;
+    }
+
+    .btn-loop-on {
+      border-color: rgba(16, 185, 129, 0.5);
+      background-color: rgba(16, 185, 129, 0.14);
+      color: #6ee7b7;
+    }
+
+    .section-pills {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 2px;
+    }
+
+    .section-pills::-webkit-scrollbar {
+      display: none;
+    }
+
+    .pill-btn {
+      white-space: nowrap;
+      padding: 4px 9px;
+      font-size: 11px;
+      border-radius: 999px;
+      background-color: var(--bg-card);
+      border-color: var(--border-subtle);
+      color: var(--text-muted);
+    }
+
+    .pill-btn.active {
+      background-color: var(--accent-amber-soft);
+      border-color: rgba(245, 158, 11, 0.5);
+      color: #fcd34d;
+    }
+
+    .scrubber-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      color: var(--text-muted);
+    }
+
+    .scrubber-row input[type="range"] {
+      flex: 1;
+      height: 5px;
+      accent-color: var(--accent-amber);
+      cursor: pointer;
+    }
+
+    /* =====================================================================
+       ZONE 2 : PANNEAU DES DEUX MAINS STRICTEMENT FIXE (TOUJOURS VISIBLE)
+       ===================================================================== */
+    .hands-stage-wrapper {
+      flex-shrink: 0;
+      background-color: var(--bg-app);
+      padding: 8px 12px 4px 12px;
+    }
+
+    .hands-stage-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      gap: 8px;
+      height: 235px;
+    }
+
+    /* La main gauche se lit à gauche ; la main droite (baguette) à droite. */
+    .hands-stage-grid > .panel-card:first-child {
+      grid-column: 2;
+    }
+
+    .hands-stage-grid > .panel-card:last-child {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    @media (max-width: 640px) {
+      .hands-stage-grid {
+        grid-template-columns: 1fr 1fr;
+        height: 205px;
+      }
+      .brand-sub {
+        display: none;
+      }
+    }
+
+    .panel-card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+      margin-bottom: 4px;
+      flex-shrink: 0;
+    }
+
+    .panel-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    /* Côté Gauche : Canvas Main Droite */
+    .canvas-box {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      width: 100%;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+
+    #conductingCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .beat-pills {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      display: flex;
+      gap: 3px;
+      background: rgba(15, 23, 42, 0.88);
+      padding: 3px;
+      border-radius: 7px;
+      border: 1px solid var(--border-subtle);
+      z-index: 5;
+    }
+
+    .beat-dot {
+      width: 19px;
+      height: 19px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 800;
+      font-family: ui-monospace, monospace;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--bg-elevated);
+      color: var(--text-muted);
+    }
+
+    .beat-dot.active {
+      background-color: var(--accent-amber);
+      color: #090d16;
+      transform: scale(1.08);
+    }
+
+    .amp-tag {
+      position: absolute;
+      bottom: 5px;
+      right: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      background: rgba(15, 23, 42, 0.88);
+      padding: 2px 6px;
+      border-radius: 6px;
+      border: 1px solid var(--border-subtle);
+      color: var(--accent-sky);
+      z-index: 5;
+    }
+
+    .countin-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(9, 13, 22, 0.88);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8px;
+      z-index: 15;
+    }
+
+    .countin-num {
+      font-size: 34px;
+      font-weight: 900;
+      font-family: ui-monospace, monospace;
+      color: var(--accent-amber);
+      line-height: 1.1;
+    }
+
+    /* Côté Droit : Main Gauche + Prompteur immédiat */
+    .right-hand-body {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .lh-meter-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 6px 8px;
+      flex-shrink: 0;
+    }
+
+    .lh-gauge-track {
+      width: 12px;
+      height: 44px;
+      background-color: var(--bg-elevated);
+      border-radius: 999px;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+      border: 1px solid var(--border-strong);
+    }
+
+    .lh-gauge-fill {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 25%;
+      background: linear-gradient(to top, #38bdf8, #f59e0b, #f43f5e);
+      border-radius: 999px;
+      transition: height 0.18s ease-out;
+    }
+
+    .lh-info {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .lh-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+    }
+
+    .lh-gesture-badge {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--accent-sky);
+    }
+
+    .dynamic-pill {
+      font-family: ui-monospace, monospace;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 6px;
+      background-color: rgba(56, 189, 248, 0.16);
+      color: var(--accent-sky);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+    }
+
+    .lh-desc {
+      font-size: 11px;
+      color: var(--text-main);
+      line-height: 1.25;
+      margin-top: 2px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .prompter-box {
+      flex: 1;
+      min-height: 0;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent-amber);
+      border-radius: var(--radius-sm);
+      padding: 6px 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    .prompter-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+    }
+
+    .measure-counter {
+      font-size: 12px;
+      font-weight: 800;
+      font-family: ui-monospace, monospace;
+      color: var(--accent-amber);
+    }
+
+    .next-cue-chip {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 6px;
+      background-color: rgba(129, 140, 248, 0.18);
+      color: #c7d2fe;
+      white-space: nowrap;
+    }
+
+    .action-now-text {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-main);
+      line-height: 1.25;
+      margin: 2px 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .next-cue-text {
+      font-size: 10px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 3px;
+    }
+
+    /* =====================================================================
+       ZONE 3 : CONDUCTEUR ANNOTÉ (DÉFILEMENT ISOLÉ UNIQUEMENT ICI)
+       ===================================================================== */
+    .score-section {
+      flex: 1;
+      min-height: 0;
+      padding: 4px 12px 10px 12px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .score-card {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      flex: 1;
+      min-height: 0;
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .score-header {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 6px;
+      margin-bottom: 6px;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    #scoreListContainer {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding-right: 2px;
+    }
+
+    .measure-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 8px 10px;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background-color 0.12s ease, border-color 0.12s ease;
+    }
+
+    .measure-row:hover {
+      border-color: var(--border-strong);
+      background-color: rgba(30, 41, 59, 0.55);
+    }
+
+    .measure-row.active-measure {
+      border-color: var(--accent-amber);
+      background-color: rgba(245, 158, 11, 0.12);
+      box-shadow: inset 3px 0 0 var(--accent-amber);
+    }
+
+    .m-num-badge {
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      background-color: var(--bg-elevated);
+      font-family: ui-monospace, monospace;
+      font-size: 12px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--text-main);
+    }
+
+    .measure-row.active-measure .m-num-badge {
+      background-color: var(--accent-amber);
+      color: #090d16;
+    }
+
+    .m-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .m-top-line {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 3px;
+    }
+
+    .m-section-tag {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--accent-amber);
+    }
+
+    .m-dyn-tag {
+      font-size: 10px;
+      font-weight: 800;
+      font-family: ui-monospace, monospace;
+      padding: 1px 5px;
+      border-radius: 4px;
+      background-color: var(--bg-elevated);
+      color: var(--accent-sky);
+    }
+
+    .m-lyrics {
+      font-size: 11px;
+      font-style: italic;
+      color: #cbd5e1;
+    }
+
+    .m-action {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+      line-height: 1.3;
+    }
+
+    .m-instruments {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* =====================================================================
+       MODALE GUIDE 4/4 (FERMÉE PAR DÉFAUT)
+       ===================================================================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(2, 6, 23, 0.85);
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-box {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-lg);
+      max-width: 680px;
+      width: 100%;
+      max-height: 85dvh;
+      overflow-y: auto;
+      padding: 16px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .guide-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 8px;
+      font-size: 12px;
+    }
+
+    .guide-item {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+    }
+
+    .guide-item h4 {
+      margin: 0 0 4px 0;
+      font-size: 12px;
+      color: var(--accent-amber);
+    }
+
+    .guide-item p {
+      margin: 0;
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+
+    /* Toast de notification */
+    .toast-msg {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: var(--bg-elevated);
+      color: var(--text-main);
+      border: 1px solid var(--accent-amber);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      z-index: 60;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =====================================================================
+       ZONE 1 : HEADER COMPACT FIXE EN HAUT
+       ===================================================================== -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="header-top">
+        <div class="brand">
+          <div class="brand-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+              <path d="M4 20L19 5" />
+              <circle cx="4" cy="20" r="2.2" fill="currentColor" />
+            </svg>
+          </div>
+          <div>
+            <h1 class="brand-title">The Hanging Tree (ONM)</h1>
+            <p class="brand-sub">Arr. Juliette Penin • 62 mesures • 4/4 • 100 BPM</p>
+          </div>
+        </div>
+
+        <div class="transport-bar">
+          <!-- Lecture / Pause -->
+          <button id="playPauseBtn" class="btn-play">
+            <svg id="iconPlay" width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            <svg id="iconPause" class="hidden" width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            <span id="playBtnText">Démarrer (Levée)</span>
+          </button>
+
+          <!-- Reset -->
+          <button id="resetBtn" title="Retour mesure 1">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>
+            </svg>
+          </button>
+
+          <!-- Sélecteur de Tempo -->
+          <div class="speed-group">
+            <button class="speed-btn" data-speed="0.7">70%</button>
+            <button class="speed-btn" data-speed="0.85">85%</button>
+            <button class="speed-btn active" data-speed="1">100%</button>
+          </div>
+
+          <!-- Clic Métronome -->
+          <button id="metroBtn" class="btn-toggle-on">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M12 2L6 21h12L12 2z"/><path d="M12 18l5-9"/>
+            </svg>
+            <span>Clic: <strong id="metroText">ON</strong></span>
+          </button>
+
+          <!-- Boucle Section -->
+          <button id="loopBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+            </svg>
+            <span>Boucle: <strong id="loopText">OFF</strong></span>
+          </button>
+
+          <!-- Import MP3/WAV -->
+          <label for="audioFileInput" class="btn" title="Charger un enregistrement MP3 ou WAV">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            <span id="audioSourceLabel">MP3/WAV</span>
+          </label>
+          <input type="file" id="audioFileInput" accept="audio/*" class="hidden" />
+          <button id="clearMp3Btn" class="hidden" title="Revenir au synthétiseur intégré">✕</button>
+
+          <!-- Guide 4/4 -->
+          <button id="openGuideBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            <span>Guide 4/4</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Barre de sélection rapide des sections -->
+      <div class="section-pills" id="sectionPillsRow"></div>
+
+      <!-- Barre de progression des mesures -->
+      <div class="scrubber-row">
+        <span>Mes. <strong id="scrubberLabel" style="color:#fff;">1</strong>/62</span>
+        <input type="range" id="measureSlider" min="1" max="62" value="1" step="1" />
+        <span id="bpmLabel">100 BPM</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- =====================================================================
+       ZONE 2 : PANNEAU DES DEUX MAINS STRICTEMENT FIXE (TOUJOURS VISIBLE)
+       ===================================================================== -->
+  <section class="hands-stage-wrapper">
+    <div class="hands-stage-grid">
+      
+      <!-- CÔTÉ GAUCHE : MAIN DROITE (Battue 4/4 animée) -->
+      <div class="panel-card">
+        <div class="panel-header">
+          <span class="panel-label">Main Droite • Battue 4/4</span>
+          <span id="rightHandMode" style="font-size:10px; font-weight:700; color:#f59e0b;">Petite & précise</span>
+        </div>
+        <div class="canvas-box" id="canvasBox">
+          <div class="beat-pills">
+            <span class="beat-dot active" data-dot="1">1</span>
+            <span class="beat-dot" data-dot="2">2</span>
+            <span class="beat-dot" data-dot="3">3</span>
+            <span class="beat-dot" data-dot="4">4</span>
+          </div>
+          <canvas id="conductingCanvas"></canvas>
+          <div class="amp-tag" id="ampTag">Amplitude : ppp</div>
+
+          <!-- Overlay Levée / Préparation (4 temps avant m.1) -->
+          <div id="countInOverlay" class="countin-overlay hidden">
+            <span style="font-size:10px; font-weight:800; text-transform:uppercase; color:#f59e0b;">Levée de préparation</span>
+            <div class="countin-num" id="countInNum">1</div>
+            <span id="countInHint" style="font-size:11px; color:#e2e8f0;">Temps 4 = Respirez et levez la main !</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CÔTÉ DROIT : MAIN GAUCHE + PROMPTEUR IMMÉDIAT -->
+      <div class="panel-card">
+        <div class="panel-header">
+          <span class="panel-label">Main Gauche & Prompteur</span>
+          <span class="dynamic-pill" id="dynamicBadge">ppp / mf</span>
+        </div>
+
+        <div class="right-hand-body">
+          <!-- Indicateur visuel animé de la Main Gauche -->
+          <div class="lh-meter-row">
+            <div class="lh-gauge-track" title="Hauteur et énergie de la main gauche">
+              <div class="lh-gauge-fill" id="lhGaugeFill"></div>
+            </div>
+            <div class="lh-info">
+              <div class="lh-title-row">
+                <span class="lh-gesture-badge" id="lhGestureTitle">🤚 Paume vers le bas</span>
+              </div>
+              <div class="lh-desc" id="lhGestureDesc">Contenir la nappe ppp (Fl.2, Clar., Cordes) et montrer le départ Tpt 1 / Voix au 2e temps.</div>
+            </div>
+          </div>
+
+          <!-- Prompteur d'action immédiate -->
+          <div class="prompter-box">
+            <div class="prompter-top">
+              <span class="measure-counter" id="prompterMeasure">Mes. 1/62 • Intro/C1</span>
+              <span class="next-cue-chip" id="nextCueChip">Dans 4 mes.</span>
+            </div>
+            <div class="action-now-text" id="actionNowText">
+              Temps 1 doux pour la nappe, puis regard & léger signe à Trompette 1 + Voix sur le 2e temps.
+            </div>
+            <div class="next-cue-text" id="nextCueText">
+              Prochain départ : Mes. 5 (Hautbois, Clar. 1, Basson)
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       ZONE 3 : CONDUCTEUR ANNOTÉ (DÉFILEMENT ISOLÉ)
+       ===================================================================== -->
+  <section class="score-section">
+    <div class="score-card">
+      <div class="score-header">
+        <strong>Conducteur Annoté — 62 Mesures (Cliquez sur une mesure pour y aller)</strong>
+        <span id="audioModeStatus" style="color:#10b981; font-weight:700;">● Synthé Orchestral ONM</span>
+      </div>
+      <div id="scoreListContainer"></div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       MODALE GUIDE 4/4 (FERMÉE PAR DÉFAUT)
+       ===================================================================== -->
+  <div id="guideModal" class="modal-backdrop hidden">
+    <div class="modal-box">
+      <div class="modal-header">
+        <strong style="font-size:14px; color:#f59e0b;">Guide de la battue à 4 temps (Chironomie)</strong>
+        <button id="closeGuideBtn">Fermer ✕</button>
+      </div>
+      <div class="guide-grid">
+        <div class="guide-item">
+          <h4>0. La Levée (Anacrouse)</h4>
+          <p>Avant le 1er temps, respirez avec l'orchestre en levant la main droite sur le 4e temps à vide pour donner le tempo (100 BPM).</p>
+        </div>
+        <div class="guide-item">
+          <h4>Temps 1 : Vers le BAS</h4>
+          <p>Descente verticale franche jusqu'au plan de battue (niveau du plexus), suivie d'un petit rebond net (l'<strong>ictus</strong>).</p>
+        </div>
+        <div class="guide-item">
+          <h4>Temps 2 : Vers la GAUCHE</h4>
+          <p>Pour un droitier, mouvement vers l'intérieur (croise légèrement devant le buste vers la gauche).</p>
+        </div>
+        <div class="guide-item">
+          <h4>Temps 3 : Vers la DROITE</h4>
+          <p>Grand mouvement horizontal traversant vers l'extérieur (droite). C'est le temps le plus lisible pour tous les pupitres.</p>
+        </div>
+        <div class="guide-item">
+          <h4>Temps 4 : Vers le HAUT</h4>
+          <p>Remontée souple vers le haut pour préparer la chute du prochain Temps 1.</p>
+        </div>
+        <div class="guide-item">
+          <h4>Rôle de la Main Gauche</h4>
+          <p>Paume vers le bas = calmer/piano. Main qui monte paume vers le haut = crescendo. Index pointé = départ d'un pupitre.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastMsg" class="toast-msg hidden"></div>
+
+  <script>
+    // =========================================================================
+    // 1. DONNÉES COMPLÈTES DES 62 MESURES — THE HANGING TREE (ARR. J. PENIN)
+    // =========================================================================
+    const TOTAL_MEASURES = 62;
+    const BASE_BPM = 100;
+
+    const SECTIONS = [
+      { id: "s1", label: "Intro/C1 (m.1)", start: 1, end: 8 },
+      { id: "s2", label: "C2 (m.9)", start: 9, end: 16 },
+      { id: "s3", label: "Timbales (m.17)", start: 17, end: 24 },
+      { id: "s4", label: "Tutti ff (m.25)", start: 25, end: 33 },
+      { id: "s5", label: "Pont (m.34)", start: 34, end: 40 },
+      { id: "s6", label: "Voix Ah (m.41)", start: 41, end: 47 },
+      { id: "s7", label: "Montée (m.48)", start: 48, end: 50 },
+      { id: "s8", label: "Climax fff (m.51)", start: 51, end: 57 },
+      { id: "s9", label: "Final (m.58)", start: 58, end: 62 }
+    ];
+
+    const MAJOR_CUES = [
+      { measure: 5, text: "Mes. 5 : Entrée Hautbois, Clar. 1 & Basson (p/pp)" },
+      { measure: 9, text: "Mes. 9 : Couplet 2 (mp) + crescendo sur « in the hanging tree »" },
+      { measure: 13, text: "Mes. 13 : Entrée Flûte 1 (p) & Hautbois (mp)" },
+      { measure: 17, text: "Mes. 17 : Point d'orgue (t.2) + Timbales & Grosse Caisse (f) !" },
+      { measure: 18, text: "Mes. 18 : Entrée Piccolo, Cors, Tpt 2 & crescendo vers f" },
+      { measure: 25, text: "Mes. 25 : Roulement Timbales/Cymbale -> Explosion TUTTI (ff) !" },
+      { measure: 34, text: "Mes. 34 : Pont instrumental (f) + trait rapide Piccolo/Sax Sop." },
+      { measure: 41, text: "Mes. 41 : Entrée Chœur « Ah » (mf) + Flûtes/Piccolo (ff)" },
+      { measure: 48, text: "Mes. 48 : Grande montée p < fff sur 3 mesures (m.48-50) !" },
+      { measure: 51, text: "Mes. 51 : CLIMAX fff — Tutti complet + Caisse claire !" },
+      { measure: 58, text: "Mes. 58 : Péroraison fff + roulement rythmique percussions" },
+      { measure: 61, text: "Mes. 61-62 : Tenue fp < fff et COUPURE NETTE fin m.62 !" }
+    ];
+
+    // Grille harmonique (Ré mineur : Dm, Bb, F, C, Gm, A) pour l'accompagnement synthétisé
+    function getChordForMeasure(m) {
+      if (m <= 4) return [146.83, 220.00, 293.66, 349.23]; // Dm
+      if (m <= 6) return [116.54, 174.61, 233.08, 293.66]; // Bb
+      if (m <= 8) return [146.83, 220.00, 293.66, 349.23]; // Dm
+      if (m <= 12) return [146.83, 220.00, 293.66, 349.23]; // Dm
+      if (m <= 14) return [116.54, 174.61, 233.08, 293.66]; // Bb
+      if (m <= 16) return [130.81, 196.00, 261.63, 329.63]; // C
+      if (m <= 20) return [146.83, 220.00, 293.66, 349.23]; // Dm
+      if (m <= 22) return [116.54, 174.61, 233.08, 293.66]; // Bb
+      if (m <= 24) return [110.00, 164.81, 220.00, 277.18]; // A
+      if (m <= 28) return [146.83, 220.00, 293.66, 349.23]; // Dm
+      if (m <= 30) return [116.54, 174.61, 233.08, 293.66]; // Bb
+      if (m <= 33) return [130.81, 196.00, 261.63, 329.63]; // C -> Dm
+      if (m <= 37) return [146.83, 220.00, 293.66, 349.23]; // Dm
+      if (m <= 40) return [116.54, 174.61, 233.08, 293.66]; // Bb
+      if (m <= 44) return [174.61, 220.00, 261.63, 349.23]; // F
+      if (m <= 47) return [130.81, 196.00, 261.63, 329.63]; // C
+      if (m <= 50) return [116.54, 174.61, 233.08, 293.66]; // Bb (montée)
+      if (m <= 54) return [146.83, 220.00, 293.66, 349.23]; // Dm (Climax)
+      if (m <= 57) return [116.54, 174.61, 233.08, 293.66]; // Bb
+      if (m <= 60) return [130.81, 196.00, 261.63, 329.63]; // C
+      return [146.83, 220.00, 293.66, 349.23]; // Dm Final
+    }
+
+    function buildMeasureData() {
+      const data = [];
+      for (let m = 1; m <= TOTAL_MEASURES; m++) {
+        let section = "Couplet 1";
+        let dyn = "ppp / mf";
+        let amp = 1; // 1: très petite, 2: moyenne, 3: large, 4: très large (fff), 5: tenue finale
+        let lhLevel = 20; // % hauteur jauge main gauche
+        let lhTitle = "🤚 Paume vers le bas";
+        let lhDesc = "Contenir les nappes ppp/pp ; garder un geste calme et proche du corps.";
+        let action = "Battue légère à 4 temps ; accompagner la ligne vocale et Trompette 1.";
+        let instruments = "Fl. 2, Clar. 1-2, Saxs, Tbn, Tuba, Basse, Cordes (ppp) + Tpt 1 & Voix (mf)";
+        let lyrics = "";
+
+        if (m === 1) {
+          lyrics = "« Are you, are you »";
+          action = "Temps 1 doux pour la nappe, puis regard & léger signe à Trompette 1 + Voix sur le 2e temps.";
+        } else if (m === 2) {
+          lyrics = "« co-ming to the tree? »";
+          action = "Maintenir la pulsation régulière à 100 BPM sans presser sur les croches.";
+        } else if (m === 3) {
+          lyrics = "« Wear a neck-lace of hope, »";
+          action = "Soutenir le phrasé lié des cordes et des trombones.";
+        } else if (m === 4) {
+          lyrics = "« side by side with me. »";
+          action = "Préparer du regard le Hautbois et le Basson pour la mesure 5.";
+        } else if (m === 5) {
+          dyn = "p / mf";
+          lhLevel = 28;
+          lyrics = "« Strange things did hap-pen here, »";
+          action = "Départ doux main gauche pour Hautbois (p), Clar. 1 (pp) et Basson (p).";
+          instruments = "+ Entrée Hautbois, Clar. 1, Basson (p/pp) sur la mélodie";
+        } else if (m >= 6 && m <= 8) {
+          lyrics = m === 6 ? "« no stran-ger would it be. »" : (m === 7 ? "« If we met, »" : "« at mid-night »");
+          action = m === 8 ? "Préparer le léger crescendo collectif de la mesure 9." : "Accompagner la fin de phrase avec souplesse.";
+        } else if (m >= 9 && m <= 16) {
+          section = "Couplet 2";
+          dyn = "mp / mf";
+          amp = 2;
+          lhLevel = 42;
+          lhTitle = "〰 Soutien souple (mp)";
+          lhDesc = "Geste un peu plus ouvert : les cordes et saxophones passent à mp.";
+          if (m === 9) {
+            lyrics = "« in the han-ging tree. Are you, »";
+            action = "Crescendo de la nappe (ppp -> mp) sur les temps 1-2 ; relancer le 2e couplet.";
+            instruments = "Nappes passent à mp + Basse électrique (mp) + Tpt 1 & Voix";
+          } else if (m === 13) {
+            lyrics = "« Strange things did hap-pen here, »";
+            action = "Donner l'entrée de la Flûte 1 (p) et du Hautbois (mp) sur le 1er temps.";
+            instruments = "+ Entrée Flûte 1 (p) & Hautbois (mp) à l'octave";
+          } else {
+            lyrics = m === 10 ? "« are you co-ming to the tree? »" : (m === 11 ? "« Where I told you to run, »" : (m === 12 ? "« so we'd both be free. »" : (m === 15 ? "« If we met, »" : "« at mid-night »")));
+            action = m === 16 ? "Préparer la respiration et le point d'orgue de la mesure 17 !" : "Garder l'élan régulier vers le climax du couplet.";
+          }
+        } else if (m >= 17 && m <= 24) {
+          section = "Couplet 3 (Percussions)";
+          dyn = "mf -> f";
+          amp = 3;
+          lhLevel = 65;
+          lhTitle = "⚡ Appels rythmiques (f)";
+          lhDesc = "Main gauche active : marquer l'entrée des Timbales/Grosse Caisse et porter le crescendo.";
+          if (m === 17) {
+            lyrics = "« in the han-ging tree. » (Point d'orgue)";
+            action = "Tenir le point d'orgue (t.2), couper net puis donner l'entrée forte Timbales + Grosse Caisse !";
+            instruments = "Point d'orgue général + Entrée Timbales & Grosse Caisse (f)";
+          } else if (m === 18) {
+            lyrics = "« Are you, are you »";
+            action = "Entrée Piccolo, Cors en Fa et Trompette 2 ; amorcer un grand crescendo vers f.";
+            instruments = "+ Entrée Piccolo, Cors, Tpt 2, Sax Soprano & Ténor (mf)";
+          } else if (m === 20) {
+            dyn = "f";
+            lyrics = "« They strung up a man, »";
+            action = "Plein forte (f) ! Battue large et bien ancrée pour tout l'orchestre.";
+            instruments = "Tutti bois, cuivres, cordes & Grosse Caisse (f)";
+          } else {
+            lyrics = m === 19 ? "« co-ming to the tree? »" : (m === 21 ? "« they say who mur-dered three. »" : (m === 22 ? "« Strange things did hap-pen here, »" : (m === 23 ? "« no stran-ger would it be. »" : "« If we met, at mid-night »")));
+            action = m === 24 ? "Préparer le roulement de Timbales/Cymbale vers l'explosion ff (m.25) !" : "Maintenir l'énergie forte et la précision rythmique.";
+          }
+        } else if (m >= 25 && m <= 33) {
+          section = "Couplet 4 (Tutti ff)";
+          dyn = "ff";
+          amp = 4;
+          lhLevel = 82;
+          lhTitle = "🔥 Puissance Tutti (ff)";
+          lhDesc = "Deux mains engagées : porter le chœur ff et la Grosse Caisse sur chaque temps.";
+          if (m === 25) {
+            lyrics = "« in the han-ging tree. »";
+            action = "Accompagner le roulement Timbales/BD/Cymbale (p < f) vers le choc ff de m.26 !";
+            instruments = "Roulement Timbales + Grosse Caisse + Cymbale suspendue (p < f)";
+          } else if (m === 26) {
+            lyrics = "« Are you, are you »";
+            action = "IMPULSION MAXIMALE (ff) sur le 1er temps pour le Chœur, Timbales, BD et Cymbale !";
+            instruments = "TUTTI COMPLET (ff) + Chœur à 2 voix + Timbales & Grosse Caisse";
+          } else {
+            lyrics = m === 27 ? "« co-ming to the tree? »" : (m === 28 ? "« Where dead man called out »" : (m === 29 ? "« for his love to flee. »" : (m === 30 ? "« Strange things did hap-pen here, »" : (m === 31 ? "« no stran-ger would it be. »" : (m === 32 ? "« If we met, at mid-night »" : "« in the han-ging tree. »")))));
+            action = m === 33 ? "Attention : transition immédiate vers le Pont Instrumental (m.34) !" : "Battue ample et autoritaire ; garder le chœur et les cuivres ensemble.";
+          }
+        } else if (m >= 34 && m <= 40) {
+          section = "Pont Instrumental";
+          dyn = "f / mf";
+          amp = 3;
+          lhLevel = 68;
+          lhTitle = "🎺 Thème Instrumental";
+          lhDesc = "Mettre en valeur le thème aux Bois/Cordes puis la marche militaire (m.38).";
+          if (m === 34) {
+            action = "Lancer le thème instrumental (f) : Piccolo & Sax Soprano font un trait rapide vers l'aigu !";
+            instruments = "Thème principal Piccolo, Fl.1, Clar.2, Saxs, Cuivres, Cordes (f)";
+          } else if (m === 38) {
+            action = "Marquer les accents secs de Grosse Caisse et Caisse Claire (temps 1 et 2) !";
+            instruments = "+ Entrée Caisse Claire & Grosse Caisse rythmique (accents)";
+          } else {
+            action = m === 40 ? "Diminuendo puis préparer l'entrée vocale « Ah » à la mesure 41 !" : "Soutenir le chant instrumental sans ralentir.";
+            instruments = "Ensemble orchestral (mf/f) avec relais graves Tbn/Tuba/Timbales";
+          }
+        } else if (m >= 41 && m <= 47) {
+          section = "Vocalises « Ah »";
+          dyn = "mf / ff";
+          amp = 3;
+          lhLevel = 72;
+          lhTitle = "🎤 Départ Voix « Ah »";
+          lhDesc = "Montrer clairement l'entrée du chœur « Ah » et les accents des Cors/Altos.";
+          if (m === 41) {
+            lyrics = "« Ah ————— »";
+            action = "Donner l'entrée du Chœur « Ah » (mf) + Flûtes/Piccolo/Sax Sop. (ff) sur le 2e temps !";
+            instruments = "Voix « Ah » (mf) + Piccolo, Fl.2, Sax Sop/Tén, Tpt 2 (ff)";
+          } else {
+            lyrics = "« Ah ————— »";
+            action = m === 47 ? "Préparer la chute subite piano (p) de la mesure 48 pour la grande montée !" : "Accentuer les syncopes des Cors et Saxophones Altos.";
+            instruments = "Chœur « Ah » + Tutti orchestral soutenu";
+          }
+        } else if (m >= 48 && m <= 50) {
+          section = "Grande Montée";
+          dyn = "p < fff";
+          amp = m === 48 ? 2 : (m === 49 ? 3 : 4);
+          lhLevel = m === 48 ? 35 : (m === 49 ? 65 : 92);
+          lhTitle = "📈 Levée progressive !";
+          lhDesc = "Lever lentement la main gauche paume vers le haut sur 3 mesures jusqu'à fff !";
+          if (m === 48) {
+            action = "RETOMBER PIANO (p) d'un coup, puis commencer à faire monter tout l'orchestre !";
+            instruments = "Tout l'orchestre en nappes longues (p) + roulement Timbales/BD/SD";
+          } else if (m === 49) {
+            action = "CONTINUER LA MONTÉE (crescendo) : agrandir progressivement la battue !";
+            instruments = "Crescendo général sur harmonies tenues";
+          } else {
+            action = "DERNIÈRE MESURE DE MONTÉE (< fff) : préparer l'impact géant de la mesure 51 !";
+            instruments = "Crescendo maximal vers le Climax fff";
+          }
+        } else if (m >= 51 && m <= 57) {
+          section = "Climax fff";
+          dyn = "fff";
+          amp = 4;
+          lhLevel = 98;
+          lhTitle = "💥 CLIMAX MAXIMAL (fff)";
+          lhDesc = "Battue très large et puissante ; soutenir les aigus des flûtes, cuivres et chœur.";
+          if (m === 51) {
+            action = "EXPLOSION fff ! Coup de cymbale, caisse claire et chœur fortissimo !";
+            instruments = "TOUT L'ORCHESTRE (fff) + Caisse claire, Grosse Caisse, Cymbale";
+          } else {
+            action = m === 57 ? "Grand crescendo final sur les blanches vers la péroraison (m.58) !" : "Garder une battue royale, large et très lisible pour les 800 musiciens.";
+            instruments = "Tutti fff soutenu (cuivres, bois aigus, chœur, percussions)";
+          }
+        } else if (m >= 58 && m <= 62) {
+          section = "Final & Arrêt";
+          dyn = m >= 61 ? "fp < fff" : "fff";
+          amp = m >= 61 ? 5 : 4;
+          lhLevel = m >= 61 ? 100 : 95;
+          lhTitle = m >= 61 ? "✋ Tenue puis COUPURE !" : "🔥 Péroraison fff";
+          lhDesc = m >= 61 ? "Bloquer la note tenue (fp), faire gonfler jusqu'à fff et couper net sur le 4e temps !" : "Marquer les croches pointées-doubles des percussions et cuivres.";
+          if (m === 58) {
+            action = "PÉRAISON fff : thème triomphal avec roulements de Timbales et Caisse Claire !";
+            instruments = "Tutti fff + rythme martial Timbales / BD / SD";
+          } else if (m === 61) {
+            action = "ACCORD FINAL TENU (fp) : stabiliser la tenue et amorcer le crescendo final !";
+            instruments = "Tutti général sur Ré mineur tenu (fp <)";
+          } else if (m === 62) {
+            action = "GONFLER JUSQU'À fff ET COUPER NET SUR LE 4e TEMPS (geste sec des deux mains) !";
+            instruments = "Crescendo final fff + COUPURE GÉNÉRALE fin de mesure 62 !";
+          } else {
+            action = "Maintenir la puissance maximale fff jusqu'à l'accord final (m.61) !";
+            instruments = "Tutti fff complet";
+          }
+        }
+
+        data.push({
+          measure: m,
+          section,
+          dyn,
+          amp,
+          lhLevel,
+          lhTitle,
+          lhDesc,
+          action,
+          instruments,
+          lyrics
+        });
+      }
+      return data;
+    }
+
+    const SCORE_DATA = buildMeasureData();
+
+    // =========================================================================
+    // 2. MOTEUR AUDIO WEB AUDIO API (SYNTHÉ ORCHESTRAL + MÉTRONOME + MP3)
+    // =========================================================================
+    class OrchestraAudioEngine {
+      constructor() {
+        this.ctx = null;
+        this.metronomeOn = true;
+        this.customAudio = null;
+        this.customUrl = null;
+        this.hasCustomFile = false;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (!AudioCtx) return false;
+          try {
+            this.ctx = new AudioCtx();
+          } catch (error) {
+            console.warn("Web Audio indisponible ; la partition et la baguette continuent sans son.", error);
+            return false;
+          }
+        }
+        if (this.ctx.state === "suspended") {
+          this.ctx.resume().catch(error => {
+            console.warn("Impossible de reprendre le contexte audio.", error);
+          });
+        }
+        return true;
+      }
+
+      playClick(beatIndex, isCountIn) {
+        if (!this.metronomeOn || !this.init()) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        // Temps 1 plus aigu (1000 Hz), temps 2-3-4 (720 Hz)
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(beatIndex === 0 ? 1040 : 740, now);
+
+        const vol = isCountIn ? 0.28 : 0.16;
+        gain.gain.setValueAtTime(vol, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.065);
+      }
+
+      playOrchestraBeat(measure, beatIndex, speed) {
+        if (this.hasCustomFile || !this.init()) return;
+        const now = this.ctx.currentTime;
+        const beatDur = (60 / BASE_BPM) / speed;
+        const mInfo = SCORE_DATA[measure - 1];
+        const chord = getChordForMeasure(measure);
+
+        // Volume selon nuance de la partition
+        const ampGainMap = [0, 0.05, 0.09, 0.14, 0.20, 0.22];
+        const baseVol = ampGainMap[mInfo.amp] || 0.09;
+
+        // 1. Nappe harmonique sur le 1er temps de chaque mesure
+        if (beatIndex === 0) {
+          chord.forEach((freq, idx) => {
+            const osc = this.ctx.createOscillator();
+            const filter = this.ctx.createBiquadFilter();
+            const gain = this.ctx.createGain();
+
+            osc.type = mInfo.amp >= 3 ? "sawtooth" : "sine";
+            osc.frequency.setValueAtTime(freq, now);
+
+            filter.type = "lowpass";
+            filter.frequency.setValueAtTime(mInfo.amp >= 3 ? 1300 : 650, now);
+
+            const noteVol = (baseVol / chord.length) * (idx === 0 ? 1.4 : 0.9);
+            const dur = beatDur * 3.85;
+
+            gain.gain.setValueAtTime(0.001, now);
+            gain.gain.linearRampToValueAtTime(noteVol, now + 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now);
+            osc.stop(now + dur + 0.05);
+          });
+        }
+
+        // 2. Timbales / Grosse Caisse à partir de la mesure 17
+        if (measure >= 17 && (beatIndex === 0 || (measure >= 26 && beatIndex === 2))) {
+          const drumOsc = this.ctx.createOscillator();
+          const drumGain = this.ctx.createGain();
+          drumOsc.type = "sine";
+          drumOsc.frequency.setValueAtTime(115, now);
+          drumOsc.frequency.exponentialRampToValueAtTime(42, now + 0.22);
+
+          const drumVol = mInfo.amp >= 4 ? 0.32 : 0.20;
+          drumGain.gain.setValueAtTime(drumVol, now);
+          drumGain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+
+          drumOsc.connect(drumGain);
+          drumGain.connect(this.ctx.destination);
+          drumOsc.start(now);
+          drumOsc.stop(now + 0.26);
+        }
+
+        // 3. Caisse claire martiale sur le Climax (m.51-60)
+        if (measure >= 51 && measure <= 60 && (beatIndex === 1 || beatIndex === 3)) {
+          const bufferSize = this.ctx.sampleRate * 0.12;
+          const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+          const data = buffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1;
+          }
+          const noise = this.ctx.createBufferSource();
+          noise.buffer = buffer;
+
+          const hp = this.ctx.createBiquadFilter();
+          hp.type = "highpass";
+          hp.frequency.setValueAtTime(900, now);
+
+          const snareGain = this.ctx.createGain();
+          snareGain.gain.setValueAtTime(0.14, now);
+          snareGain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+
+          noise.connect(hp);
+          hp.connect(snareGain);
+          snareGain.connect(this.ctx.destination);
+          noise.start(now);
+        }
+      }
+
+      loadCustomFile(file) {
+        if (this.customUrl) URL.revokeObjectURL(this.customUrl);
+        this.customUrl = URL.createObjectURL(file);
+        if (!this.customAudio) {
+          this.customAudio = new Audio();
+        }
+        this.customAudio.src = this.customUrl;
+        this.hasCustomFile = true;
+      }
+
+      clearCustomFile() {
+        if (this.customAudio) {
+          this.customAudio.pause();
+          this.customAudio.currentTime = 0;
+        }
+        if (this.customUrl) {
+          URL.revokeObjectURL(this.customUrl);
+          this.customUrl = null;
+        }
+        this.hasCustomFile = false;
+      }
+
+      syncCustomAudio(measure, speed, shouldPlay) {
+        if (!this.hasCustomFile || !this.customAudio) return;
+        const secPerMeasure = (60 / BASE_BPM) * 4;
+        const targetTime = Math.max(0, (measure - 1) * secPerMeasure);
+        this.customAudio.playbackRate = speed;
+        if (Math.abs(this.customAudio.currentTime - targetTime) > 0.35) {
+          this.customAudio.currentTime = targetTime;
+        }
+        if (shouldPlay && this.customAudio.paused) {
+          this.customAudio.play().catch(() => {});
+        } else if (!shouldPlay && !this.customAudio.paused) {
+          this.customAudio.pause();
+        }
+      }
+    }
+
+    const audioEngine = new OrchestraAudioEngine();
+
+    // =========================================================================
+    // 3. ÉTAT DE L'APPLICATION & INTERFACE
+    // =========================================================================
+    const state = {
+      isPlaying: false,
+      isCountIn: false,
+      countInBeat: 0, // 0, 1, 2, 3
+      speed: 1.0,
+      loopSection: false,
+      currentMeasure: 1,
+      currentBeat: 0, // 0, 1, 2, 3
+      beatProgress: 0,
+      lastTime: 0,
+      ictusFlash: 0
+    };
+
+    // Références DOM
+    const playPauseBtn = document.getElementById("playPauseBtn");
+    const iconPlay = document.getElementById("iconPlay");
+    const iconPause = document.getElementById("iconPause");
+    const playBtnText = document.getElementById("playBtnText");
+    const resetBtn = document.getElementById("resetBtn");
+    const metroBtn = document.getElementById("metroBtn");
+    const metroText = document.getElementById("metroText");
+    const loopBtn = document.getElementById("loopBtn");
+    const loopText = document.getElementById("loopText");
+    const audioFileInput = document.getElementById("audioFileInput");
+    const audioSourceLabel = document.getElementById("audioSourceLabel");
+    const clearMp3Btn = document.getElementById("clearMp3Btn");
+    const audioModeStatus = document.getElementById("audioModeStatus");
+    const measureSlider = document.getElementById("measureSlider");
+    const scrubberLabel = document.getElementById("scrubberLabel");
+    const bpmLabel = document.getElementById("bpmLabel");
+    const sectionPillsRow = document.getElementById("sectionPillsRow");
+    const scoreListContainer = document.getElementById("scoreListContainer");
+
+    // Panneau des deux mains & prompteur
+    const canvas = document.getElementById("conductingCanvas");
+    const ctx = canvas.getContext("2d");
+    const canvasBox = document.getElementById("canvasBox");
+    const beatDots = document.querySelectorAll(".beat-dot");
+    const rightHandMode = document.getElementById("rightHandMode");
+    const ampTag = document.getElementById("ampTag");
+    const countInOverlay = document.getElementById("countInOverlay");
+    const countInNum = document.getElementById("countInNum");
+    const countInHint = document.getElementById("countInHint");
+
+    const dynamicBadge = document.getElementById("dynamicBadge");
+    const lhGaugeFill = document.getElementById("lhGaugeFill");
+    const lhGestureTitle = document.getElementById("lhGestureTitle");
+    const lhGestureDesc = document.getElementById("lhGestureDesc");
+    const prompterMeasure = document.getElementById("prompterMeasure");
+    const nextCueChip = document.getElementById("nextCueChip");
+    const actionNowText = document.getElementById("actionNowText");
+    const nextCueText = document.getElementById("nextCueText");
+
+    // Modale & Toast
+    const guideModal = document.getElementById("guideModal");
+    const openGuideBtn = document.getElementById("openGuideBtn");
+    const closeGuideBtn = document.getElementById("closeGuideBtn");
+    const toastMsg = document.getElementById("toastMsg");
+    let toastTimer = null;
+
+    function showToast(msg) {
+      toastMsg.textContent = msg;
+      toastMsg.classList.remove("hidden");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toastMsg.classList.add("hidden"), 2600);
+    }
+
+    // =========================================================================
+    // 4. INITIALISATION DES BOUTONS DE SECTIONS & DU CONDUCTEUR 62 MESURES
+    // =========================================================================
+    function renderSectionPills() {
+      sectionPillsRow.innerHTML = "";
+      SECTIONS.forEach(sec => {
+        const btn = document.createElement("button");
+        btn.className = "pill-btn";
+        btn.dataset.secId = sec.id;
+        btn.textContent = sec.label;
+        btn.addEventListener("click", () => {
+          jumpToMeasure(sec.start, false);
+        });
+        sectionPillsRow.appendChild(btn);
+      });
+    }
+
+    function renderScoreList() {
+      scoreListContainer.innerHTML = "";
+      SCORE_DATA.forEach(item => {
+        const row = document.createElement("div");
+        row.className = "measure-row";
+        row.id = `m-row-${item.measure}`;
+        row.innerHTML = `
+          <div class="m-num-badge">${item.measure}</div>
+          <div class="m-content">
+            <div class="m-top-line">
+              <span class="m-section-tag">${item.section}</span>
+              <span class="m-dyn-tag">${item.dyn}</span>
+              ${item.lyrics ? `<span class="m-lyrics">${item.lyrics}</span>` : ""}
+            </div>
+            <div class="m-action">${item.action}</div>
+            <div class="m-instruments">${item.instruments}</div>
+          </div>
+        `;
+        row.addEventListener("click", () => {
+          jumpToMeasure(item.measure, true);
+        });
+        scoreListContainer.appendChild(row);
+      });
+    }
+
+    // =========================================================================
+    // 5. MISE À JOUR DE L'INTERFACE SYNCHRONISÉE
+    // =========================================================================
+    function updateUI(autoScroll = true) {
+      const m = state.currentMeasure;
+      const mInfo = SCORE_DATA[m - 1];
+
+      // Scrubber & BPM
+      measureSlider.value = m;
+      scrubberLabel.textContent = m;
+      bpmLabel.textContent = `${Math.round(BASE_BPM * state.speed)} BPM`;
+
+      // Points de temps (1, 2, 3, 4)
+      const activeBeatNum = state.isCountIn ? (state.countInBeat + 1) : (state.currentBeat + 1);
+      beatDots.forEach(dot => {
+        const b = parseInt(dot.dataset.dot, 10);
+        dot.classList.toggle("active", b === activeBeatNum);
+      });
+
+      // Overlay Levée
+      if (state.isCountIn) {
+        countInOverlay.classList.remove("hidden");
+        countInNum.textContent = state.countInBeat + 1;
+        countInHint.textContent = state.countInBeat === 3
+          ? "4 = LEVÉE VERS LE HAUT -> Temps 1 arrive !"
+          : "Préparez votre geste à 4 temps...";
+      } else {
+        countInOverlay.classList.add("hidden");
+      }
+
+      // Main Droite & Main Gauche
+      const modeNames = ["", "Petite & précise (ppp)", "Souple & régulière (mp)", "Large & appuyée (f)", "Très ample (ff/fff)", "Tenue & Coupure !"];
+      rightHandMode.textContent = modeNames[mInfo.amp] || "Battue 4/4";
+      ampTag.textContent = `Nuance : ${mInfo.dyn}`;
+
+      dynamicBadge.textContent = mInfo.dyn;
+      lhGaugeFill.style.height = `${mInfo.lhLevel}%`;
+      lhGestureTitle.textContent = mInfo.lhTitle;
+      lhGestureDesc.textContent = mInfo.lhDesc;
+
+      // Prompteur
+      prompterMeasure.textContent = `Mes. ${m}/62 • ${mInfo.section}`;
+      actionNowText.textContent = mInfo.action;
+
+      // Prochain départ critique
+      const nextCue = MAJOR_CUES.find(c => c.measure > m);
+      if (nextCue) {
+        const diff = nextCue.measure - m;
+        nextCueChip.textContent = diff === 1 ? "Mesure suivante !" : `Dans ${diff} mes.`;
+        nextCueText.textContent = nextCue.text;
+      } else {
+        nextCueChip.textContent = "Fin du morceau";
+        nextCueText.textContent = "Mes. 62 : Coupure nette sur le 4e temps !";
+      }
+
+      // Surlignage pilule section active
+      const activeSec = SECTIONS.find(s => m >= s.start && m <= s.end);
+      document.querySelectorAll(".pill-btn").forEach(btn => {
+        btn.classList.toggle("active", activeSec && btn.dataset.secId === activeSec.id);
+      });
+
+      // Surlignage ligne conducteur + défilement isolé
+      document.querySelectorAll(".measure-row.active-measure").forEach(el => el.classList.remove("active-measure"));
+      const activeRow = document.getElementById(`m-row-${m}`);
+      if (activeRow) {
+        activeRow.classList.add("active-measure");
+        if (autoScroll) {
+          const targetScroll = activeRow.offsetTop - scoreListContainer.offsetTop - (scoreListContainer.clientHeight * 0.35);
+          scoreListContainer.scrollTo({
+            top: Math.max(0, targetScroll),
+            behavior: "smooth"
+          });
+        }
+      }
+    }
+
+    // =========================================================================
+    // 6. DESSIN ANIMÉ DE LA MAIN DROITE (BATTUE OFFICIELLE À 4 TEMPS)
+    // =========================================================================
+    function resizeCanvas() {
+      const rect = canvasBox.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.max(10, Math.floor(rect.width * dpr));
+      canvas.height = Math.max(10, Math.floor(rect.height * dpr));
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+
+    function getAnchors(w, h, amp) {
+      const cx = w * 0.5;
+      const cy = h * 0.52;
+      const scaleArr = [0, 0.55, 0.72, 0.88, 1.02, 0.80];
+      const s = scaleArr[amp] || 0.72;
+      const rx = Math.min(w * 0.36, 130) * s;
+      const ry = Math.min(h * 0.36, 85) * s;
+
+      return {
+        p1: { x: cx, y: cy + ry * 0.85, label: "1 Bas" },          // Temps 1 : Bas
+        p2: { x: cx - rx * 0.88, y: cy + ry * 0.12, label: "2 Gauche" }, // Temps 2 : Gauche (intérieur)
+        p3: { x: cx + rx * 0.92, y: cy + ry * 0.12, label: "3 Droite" }, // Temps 3 : Droite (extérieur)
+        p4: { x: cx, y: cy - ry * 0.92, label: "4 Haut" }           // Temps 4 : Haut (levée)
+      };
+    }
+
+    function drawConductingCanvas() {
+      const rect = canvasBox.getBoundingClientRect();
+      const w = rect.width;
+      const h = rect.height;
+      if (w < 10 || h < 10) return;
+
+      ctx.clearRect(0, 0, w, h);
+
+      const mInfo = SCORE_DATA[state.currentMeasure - 1];
+      const amp = state.isCountIn ? 2 : mInfo.amp;
+      const pts = getAnchors(w, h, amp);
+
+      const beatIdx = state.isCountIn ? state.countInBeat : state.currentBeat;
+      const t = state.beatProgress;
+
+      // Couleur selon nuance
+      const strokeColor = amp === 1 ? "#38bdf8" : (amp === 2 ? "#34d399" : (amp === 3 ? "#f59e0b" : "#f43f5e"));
+
+      // Cas spécial : Tenue finale m.61-62
+      if (!state.isCountIn && state.currentMeasure >= 61) {
+        const isCut = state.currentMeasure === 62 && beatIdx === 3 && t > 0.35;
+        const holdX = isCut ? w * 0.72 : w * 0.5;
+        const holdY = isCut ? h * 0.30 : h * 0.45;
+
+        ctx.save();
+        ctx.strokeStyle = "#f43f5e";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(w * 0.5, h * 0.45, 22 + Math.sin(t * Math.PI * 2) * 4, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 12px system-ui, sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(isCut ? "✂ COUPURE NETTE !" : "TENUE fp < fff", w * 0.5, h * 0.78);
+
+        ctx.beginPath();
+        ctx.arc(holdX, holdY, 8, 0, Math.PI * 2);
+        ctx.fillStyle = "#f59e0b";
+        ctx.fill();
+        ctx.restore();
+        return;
+      }
+
+      // 1. Tracé guide de la figure à 4 temps
+      ctx.save();
+      ctx.strokeStyle = "rgba(148, 163, 184, 0.25)";
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(pts.p4.x, pts.p4.y);
+      ctx.lineTo(pts.p1.x, pts.p1.y);
+      ctx.lineTo(pts.p2.x, pts.p2.y);
+      ctx.lineTo(pts.p3.x, pts.p3.y);
+      ctx.lineTo(pts.p4.x, pts.p4.y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Points d'impact (Ictus 1, 2, 3, 4)
+      const order = [pts.p1, pts.p2, pts.p3, pts.p4];
+      order.forEach((pt, idx) => {
+        const isCurrent = idx === beatIdx;
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, isCurrent ? 6 : 4, 0, Math.PI * 2);
+        ctx.fillStyle = isCurrent ? strokeColor : "rgba(148, 163, 184, 0.45)";
+        ctx.fill();
+
+        ctx.fillStyle = isCurrent ? "#ffffff" : "#94a3b8";
+        ctx.font = isCurrent ? "bold 10px system-ui, sans-serif" : "10px system-ui, sans-serif";
+        ctx.textAlign = "center";
+        const offsetY = idx === 0 ? 15 : (idx === 3 ? -10 : -9);
+        ctx.fillText(pt.label, pt.x, pt.y + offsetY);
+      });
+      ctx.restore();
+
+      // 2. Calcul de la trajectoire courbe avec rebond (ictus) entre le temps actuel et le suivant
+      const startPt = order[beatIdx];
+      const endPt = order[(beatIdx + 1) % 4];
+      const ease = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+      const bounce = Math.sin(t * Math.PI) * 16;
+
+      const tipX = startPt.x + (endPt.x - startPt.x) * ease;
+      const tipY = startPt.y + (endPt.y - startPt.y) * ease - bounce;
+
+      // Onde lumineuse sur l'ictus au début du temps
+      if (state.ictusFlash > 0.02) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(startPt.x, startPt.y, (1 - state.ictusFlash) * 26 + 5, 0, Math.PI * 2);
+        ctx.strokeStyle = strokeColor;
+        ctx.globalAlpha = state.ictusFlash * 0.8;
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // 3. Baguette & Pointe lumineuse de la Main Droite
+      const wristX = w * 0.52;
+      const wristY = h * 0.92;
+      ctx.save();
+      ctx.strokeStyle = "rgba(248, 250, 252, 0.75)";
+      ctx.lineWidth = 3;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(wristX, wristY);
+      ctx.lineTo(tipX, tipY);
+      ctx.stroke();
+
+      // Pointe lumineuse
+      ctx.beginPath();
+      ctx.arc(tipX, tipY, 7, 0, Math.PI * 2);
+      ctx.fillStyle = strokeColor;
+      ctx.fill();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "#ffffff";
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // =========================================================================
+    // 7. CONTRÔLE DE LECTURE & BOUCLE TEMPS RÉEL
+    // =========================================================================
+    function triggerBeat(measure, beatIndex, isCountIn) {
+      state.ictusFlash = 1.0;
+      audioEngine.playClick(beatIndex, isCountIn);
+      if (!isCountIn) {
+        audioEngine.playOrchestraBeat(measure, beatIndex, state.speed);
+        if (beatIndex === 0) {
+          audioEngine.syncCustomAudio(measure, state.speed, true);
+        }
+      }
+      updateUI(beatIndex === 0 && !isCountIn);
+    }
+
+    function startPlayback() {
+      // L’animation doit rester fonctionnelle même si Web Audio est bloqué
+      // (webview mobile, permission audio ou navigateur non compatible).
+      state.isPlaying = true;
+      audioEngine.init();
+      iconPlay.classList.add("hidden");
+      iconPause.classList.remove("hidden");
+      playBtnText.textContent = "Pause";
+
+      // Si on démarre à la mesure 1, on fait d'abord les 4 temps de levée (préparation)
+      if (state.currentMeasure === 1 && state.currentBeat === 0 && state.beatProgress === 0 && !audioEngine.hasCustomFile) {
+        state.isCountIn = true;
+        state.countInBeat = 0;
+        triggerBeat(1, 0, true);
+      } else {
+        state.isCountIn = false;
+        triggerBeat(state.currentMeasure, state.currentBeat, false);
+      }
+      state.lastTime = performance.now();
+    }
+
+    function pausePlayback() {
+      state.isPlaying = false;
+      state.isCountIn = false;
+      iconPlay.classList.remove("hidden");
+      iconPause.classList.add("hidden");
+      playBtnText.textContent = "Reprendre";
+      audioEngine.syncCustomAudio(state.currentMeasure, state.speed, false);
+      updateUI(false);
+    }
+
+    function resetPlayback() {
+      pausePlayback();
+      state.currentMeasure = 1;
+      state.currentBeat = 0;
+      state.beatProgress = 0;
+      playBtnText.textContent = "Démarrer (Levée)";
+      audioEngine.syncCustomAudio(1, state.speed, false);
+      updateUI(true);
+    }
+
+    function jumpToMeasure(targetMeasure, autoStart = false) {
+      state.currentMeasure = Math.max(1, Math.min(TOTAL_MEASURES, targetMeasure));
+      state.currentBeat = 0;
+      state.beatProgress = 0;
+      state.isCountIn = false;
+      if (autoStart && !state.isPlaying) {
+        startPlayback();
+      } else if (state.isPlaying) {
+        triggerBeat(state.currentMeasure, 0, false);
+      } else {
+        updateUI(true);
+      }
+    }
+
+    function animationLoop(now) {
+      if (!state.lastTime) state.lastTime = now;
+      const dt = (now - state.lastTime) / 1000;
+      state.lastTime = now;
+
+      if (state.ictusFlash > 0) {
+        state.ictusFlash = Math.max(0, state.ictusFlash - dt * 2.8);
+      }
+
+      if (state.isPlaying) {
+        const beatDuration = (60 / BASE_BPM) / state.speed;
+        state.beatProgress += dt / beatDuration;
+
+        while (state.beatProgress >= 1.0 && state.isPlaying) {
+          state.beatProgress -= 1.0;
+
+          if (state.isCountIn) {
+            state.countInBeat++;
+            if (state.countInBeat >= 4) {
+              state.isCountIn = false;
+              state.currentMeasure = 1;
+              state.currentBeat = 0;
+              triggerBeat(1, 0, false);
+            } else {
+              triggerBeat(1, state.countInBeat, true);
+            }
+          } else {
+            state.currentBeat++;
+            if (state.currentBeat >= 4) {
+              state.currentBeat = 0;
+
+              // Gestion de la boucle sur la section active
+              if (state.loopSection) {
+                const activeSec = SECTIONS.find(s => state.currentMeasure >= s.start && state.currentMeasure <= s.end);
+                if (activeSec && state.currentMeasure >= activeSec.end) {
+                  state.currentMeasure = activeSec.start;
+                  triggerBeat(state.currentMeasure, 0, false);
+                  continue;
+                }
+              }
+
+              state.currentMeasure++;
+              if (state.currentMeasure > TOTAL_MEASURES) {
+                resetPlayback();
+                showToast("Fin de « The Hanging Tree » (Mesure 62) !");
+                break;
+              }
+            }
+            triggerBeat(state.currentMeasure, state.currentBeat, false);
+          }
+        }
+      }
+
+      drawConductingCanvas();
+      requestAnimationFrame(animationLoop);
+    }
+
+    // =========================================================================
+    // 8. ÉVÉNEMENTS UTILISATEUR
+    // =========================================================================
+    playPauseBtn.addEventListener("click", () => {
+      if (state.isPlaying) pausePlayback();
+      else startPlayback();
+    });
+
+    resetBtn.addEventListener("click", resetPlayback);
+
+    document.querySelectorAll(".speed-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".speed-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        state.speed = parseFloat(btn.dataset.speed);
+        audioEngine.syncCustomAudio(state.currentMeasure, state.speed, state.isPlaying);
+        updateUI(false);
+      });
+    });
+
+    metroBtn.addEventListener("click", () => {
+      audioEngine.metronomeOn = !audioEngine.metronomeOn;
+      metroText.textContent = audioEngine.metronomeOn ? "ON" : "OFF";
+      metroBtn.classList.toggle("btn-toggle-on", audioEngine.metronomeOn);
+    });
+
+    loopBtn.addEventListener("click", () => {
+      state.loopSection = !state.loopSection;
+      loopText.textContent = state.loopSection ? "ON" : "OFF";
+      loopBtn.classList.toggle("btn-loop-on", state.loopSection);
+      if (state.loopSection) {
+        const sec = SECTIONS.find(s => state.currentMeasure >= s.start && state.currentMeasure <= s.end);
+        if (sec) showToast(`Boucle activée : ${sec.label} à m.${sec.end}`);
+      }
+    });
+
+    measureSlider.addEventListener("input", (e) => {
+      jumpToMeasure(parseInt(e.target.value, 10), false);
+    });
+
+    audioFileInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      audioEngine.loadCustomFile(file);
+      audioSourceLabel.textContent = file.name.slice(0, 12) + "…";
+      clearMp3Btn.classList.remove("hidden");
+      audioModeStatus.textContent = "● Audio MP3/WAV local";
+      audioModeStatus.style.color = "#f59e0b";
+      showToast("Audio local chargé ! Appuyez sur Démarrer.");
+    });
+
+    clearMp3Btn.addEventListener("click", () => {
+      audioEngine.clearCustomFile();
+      audioFileInput.value = "";
+      audioSourceLabel.textContent = "MP3/WAV";
+      clearMp3Btn.classList.add("hidden");
+      audioModeStatus.textContent = "● Synthé Orchestral ONM";
+      audioModeStatus.style.color = "#10b981";
+      showToast("Retour au synthétiseur orchestral intégré.");
+    });
+
+    openGuideBtn.addEventListener("click", () => guideModal.classList.remove("hidden"));
+    closeGuideBtn.addEventListener("click", () => guideModal.classList.add("hidden"));
+    guideModal.addEventListener("click", (e) => {
+      if (e.target === guideModal) guideModal.classList.add("hidden");
+    });
+
+    // =========================================================================
+    // 9. DÉMARRAGE AU CHARGEMENT
+    // =========================================================================
+    window.onload = function () {
+      renderSectionPills();
+      renderScoreList();
+      resizeCanvas();
+      updateUI(false);
+      requestAnimationFrame(animationLoop);
+    };
+  </script>
+</body>
+</html>
