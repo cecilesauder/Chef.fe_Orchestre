@@ -181,6 +181,19 @@
       color: var(--accent-amber);
     }
 
+    .tap-tempo-btn {
+      border-color: rgba(56, 189, 248, 0.45);
+      background-color: rgba(56, 189, 248, 0.10);
+      color: #bae6fd;
+      white-space: nowrap;
+    }
+
+    .tap-tempo-btn.listening {
+      border-color: var(--accent-sky);
+      background-color: rgba(56, 189, 248, 0.22);
+      color: #fff;
+    }
+
     .btn-toggle-on {
       border-color: rgba(245, 158, 11, 0.5);
       background-color: rgba(245, 158, 11, 0.14);
@@ -798,6 +811,11 @@
             <button class="speed-btn active" data-speed="1">100%</button>
           </div>
 
+          <!-- Tap tempo : bouton ou touche Espace -->
+          <button id="tapTempoBtn" class="tap-tempo-btn" title="Tapotez plusieurs fois ou appuyez sur Espace">
+            <span>Tap tempo</span>
+          </button>
+
           <!-- Clic Métronome -->
           <button id="metroBtn" class="btn-toggle-on">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -1284,7 +1302,7 @@
       playOrchestraBeat(measure, beatIndex, speed) {
         if (this.hasCustomFile || !this.init()) return;
         const now = this.ctx.currentTime;
-        const beatDur = (60 / BASE_BPM) / speed;
+        const beatDur = (60 / state.bpm) / speed;
         const mInfo = SCORE_DATA[measure - 1];
         const chord = getChordForMeasure(measure);
 
@@ -1407,7 +1425,9 @@
         const targetTime = Math.max(0, (measure - 1) * secPerMeasure);
 
         try {
-          this.customAudio.playbackRate = speed;
+          // Le fichier de référence reste à BASE_BPM ; le tap tempo ajuste
+          // sa vitesse de lecture sans déplacer les repères de mesure.
+          this.customAudio.playbackRate = (state.bpm * speed) / BASE_BPM;
 
           // currentTime n’est pas toujours modifiable avant loadedmetadata
           // (notamment dans les navigateurs mobiles). La partition continue
@@ -1444,6 +1464,7 @@
       isCountIn: false,
       countInBeat: 0, // 0, 1, 2, 3
       speed: 1.0,
+      bpm: BASE_BPM,
       loopSection: false,
       currentMeasure: 1,
       currentBeat: 0, // 0, 1, 2, 3
@@ -1469,6 +1490,7 @@
     const measureSlider = document.getElementById("measureSlider");
     const scrubberLabel = document.getElementById("scrubberLabel");
     const bpmLabel = document.getElementById("bpmLabel");
+    const tapTempoBtn = document.getElementById("tapTempoBtn");
     const sectionPillsRow = document.getElementById("sectionPillsRow");
     const scoreListContainer = document.getElementById("scoreListContainer");
 
@@ -1498,12 +1520,57 @@
     const closeGuideBtn = document.getElementById("closeGuideBtn");
     const toastMsg = document.getElementById("toastMsg");
     let toastTimer = null;
+    let tapTimes = [];
+    let tapResetTimer = null;
 
     function showToast(msg) {
       toastMsg.textContent = msg;
       toastMsg.classList.remove("hidden");
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => toastMsg.classList.add("hidden"), 2600);
+    }
+
+    function registerTapTempo() {
+      const now = performance.now();
+      const previousTap = tapTimes[tapTimes.length - 1];
+
+      // Une pause de plus de deux secondes démarre une nouvelle série de taps.
+      if (previousTap && now - previousTap > 2000) tapTimes = [];
+      tapTimes.push(now);
+      tapTimes = tapTimes.slice(-8);
+
+      clearTimeout(tapResetTimer);
+      tapResetTimer = setTimeout(() => {
+        tapTimes = [];
+        tapTempoBtn.classList.remove("listening");
+      }, 2200);
+      tapTempoBtn.classList.add("listening");
+
+      if (tapTimes.length < 2) {
+        showToast("Tap tempo : encore une pulsation…");
+        return;
+      }
+
+      const intervals = [];
+      for (let i = 1; i < tapTimes.length; i++) {
+        const interval = tapTimes[i] - tapTimes[i - 1];
+        if (interval >= 250 && interval <= 1500) intervals.push(interval);
+      }
+      if (!intervals.length) return;
+
+      // Médiane : un tap accidentel influence moins le résultat qu’une moyenne.
+      const sorted = [...intervals].sort((a, b) => a - b);
+      const middle = Math.floor(sorted.length / 2);
+      const median = sorted.length % 2
+        ? sorted[middle]
+        : (sorted[middle - 1] + sorted[middle]) / 2;
+      state.bpm = Math.round(Math.max(40, Math.min(180, 60000 / median)));
+      state.speed = 1;
+      document.querySelectorAll(".speed-btn").forEach(btn =>
+        btn.classList.toggle("active", btn.dataset.speed === "1")
+      );
+      updateUI(false);
+      showToast(`Tempo défini à ${state.bpm} BPM`);
     }
 
     // =========================================================================
@@ -1558,7 +1625,7 @@
       // Scrubber & BPM
       measureSlider.value = m;
       scrubberLabel.textContent = m;
-      bpmLabel.textContent = `${Math.round(BASE_BPM * state.speed)} BPM`;
+      bpmLabel.textContent = `${Math.round(state.bpm * state.speed)} BPM`;
 
       // Points de temps (1, 2, 3, 4)
       const activeBeatNum = state.isCountIn ? (state.countInBeat + 1) : (state.currentBeat + 1);
@@ -1860,7 +1927,7 @@
       }
 
       if (state.isPlaying) {
-        const beatDuration = (60 / BASE_BPM) / state.speed;
+        const beatDuration = (60 / state.bpm) / state.speed;
         state.beatProgress += dt / beatDuration;
 
         while (state.beatProgress >= 1.0 && state.isPlaying) {
@@ -1916,6 +1983,16 @@
     });
 
     resetBtn.addEventListener("click", resetPlayback);
+
+    tapTempoBtn.addEventListener("click", registerTapTempo);
+    document.addEventListener("keydown", (event) => {
+      const target = event.target;
+      const isTyping = target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable);
+      if (event.code === "Space" && !isTyping) {
+        event.preventDefault();
+        registerTapTempo();
+      }
+    });
 
     document.querySelectorAll(".speed-btn").forEach(btn => {
       btn.addEventListener("click", () => {

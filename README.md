@@ -21,6 +21,7 @@ Puis ouvrir <http://localhost:8000>.
 - **Démarrer / Pause / Reprendre** : lance la levée de préparation puis la battue synchronisée.
 - **Réinitialiser** : revient à la mesure 1.
 - **70 %, 85 %, 100 %** : modifie le tempo et l’affichage du BPM.
+- **Tap tempo** : tapoter plusieurs fois sur le bouton, ou appuyer sur **Espace**, pour faire suivre la baguette au tempo de l’utilisateur.
 - **Clic** : active ou désactive le métronome.
 - **Boucle** : répète la section musicale active.
 - **MP3/WAV** : charge un enregistrement local pour remplacer le synthétiseur intégré.
@@ -34,6 +35,7 @@ Puis ouvrir <http://localhost:8000>.
 - Le chargement d’un **MP3/WAV attend ses métadonnées avant de chercher une position**, ce qui évite l’erreur fréquente de `currentTime` sur mobile.
 - Les erreurs de décodage, de lecture automatique ou de synchronisation du fichier audio sont isolées : elles ne peuvent plus arrêter la boucle de direction.
 - L’audio importé reste synchronisé par mesure lorsqu’il est disponible, tandis que le conducteur conserve sa propre horloge de battue.
+- Le **Tap tempo** utilise les dernières pulsations, une médiane résistante aux taps accidentels et une plage sécurisée de 40 à 180 BPM. Il ajuste la battue, le métronome, le synthétiseur et la vitesse de l’audio importé.
 
 ## Choix techniques
 
