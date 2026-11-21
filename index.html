@@ -831,6 +831,71 @@
       font-size: 11px;
     }
 
+    .exercise-modal-box {
+      max-width: 620px;
+    }
+
+    .exercise-hero {
+      text-align: center;
+      padding: 8px 0 14px;
+    }
+
+    .exercise-score {
+      font-size: 48px;
+      line-height: 1;
+      font-weight: 900;
+      color: var(--accent-amber);
+      font-family: ui-monospace, monospace;
+    }
+
+    .exercise-status {
+      min-height: 20px;
+      margin-top: 8px;
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    .exercise-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 10px 0;
+    }
+
+    .exercise-stat {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 9px 6px;
+      text-align: center;
+    }
+
+    .exercise-stat strong {
+      display: block;
+      color: var(--text-main);
+      font-size: 18px;
+      font-family: ui-monospace, monospace;
+    }
+
+    .exercise-stat span {
+      color: var(--text-muted);
+      font-size: 10px;
+    }
+
+    .exercise-tap-btn {
+      width: 100%;
+      min-height: 56px;
+      margin-top: 10px;
+      background: var(--accent-amber);
+      border-color: var(--accent-amber);
+      color: #090d16;
+      font-size: 15px;
+    }
+
+    .exercise-tap-btn.active {
+      box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2);
+    }
+
     @media (max-width: 640px) {
       .detail-grid {
         grid-template-columns: 1fr;
@@ -1025,6 +1090,7 @@
           <span style="display:flex; align-items:center; gap:5px;">
             <span class="dynamic-pill" id="dynamicBadge">ppp / mf</span>
             <button id="openDetailBtn" title="Ouvrir la vue détaillée">Détails</button>
+            <button id="openExerciseBtn" title="Évaluer la précision du geste">Exercice</button>
           </span>
         </div>
 
@@ -1166,6 +1232,27 @@
           </div>
         </section>
       </div>
+    </div>
+  </div>
+
+  <div id="exerciseModal" class="modal-backdrop hidden">
+    <div class="modal-box exercise-modal-box">
+      <div class="modal-header">
+        <strong style="font-size:14px; color:#f59e0b;">Mode exercice — Précision du geste</strong>
+        <button id="closeExerciseBtn">Fermer ✕</button>
+      </div>
+      <div class="exercise-hero">
+        <div class="exercise-score" id="exerciseScore">—</div>
+        <div class="exercise-status" id="exerciseStatus">Lancez l’exercice puis tapez sur le bouton ou avec la touche Espace.</div>
+      </div>
+      <div class="exercise-stats">
+        <div class="exercise-stat"><strong id="exerciseLastError">—</strong><span>Dernier écart</span></div>
+        <div class="exercise-stat"><strong id="exerciseBestScore">—</strong><span>Meilleur score</span></div>
+        <div class="exercise-stat"><strong id="exerciseStreak">0</strong><span>Série</span></div>
+      </div>
+      <button id="startExerciseBtn" class="btn-play" style="width:100%;">Démarrer l’exercice</button>
+      <button id="exerciseTapBtn" class="exercise-tap-btn" disabled>Je tape maintenant — Espace</button>
+      <p class="detail-muted" style="margin-top:10px;">Le score compare chaque tap au battement attendu. Jusqu’à 35 ms d’écart : précision excellente ; au-delà de 175 ms : tap hors tempo.</p>
     </div>
   </div>
 
@@ -1690,6 +1777,7 @@
 
     const dynamicBadge = document.getElementById("dynamicBadge");
     const openDetailBtn = document.getElementById("openDetailBtn");
+    const openExerciseBtn = document.getElementById("openExerciseBtn");
     const lhGaugeFill = document.getElementById("lhGaugeFill");
     const lhGestureTitle = document.getElementById("lhGestureTitle");
     const lhGestureDesc = document.getElementById("lhGestureDesc");
@@ -1717,10 +1805,29 @@
     const detailInstrumentsText = document.getElementById("detailInstrumentsText");
     const detailNextText = document.getElementById("detailNextText");
     const detailTempoText = document.getElementById("detailTempoText");
+    const exerciseModal = document.getElementById("exerciseModal");
+    const closeExerciseBtn = document.getElementById("closeExerciseBtn");
+    const startExerciseBtn = document.getElementById("startExerciseBtn");
+    const exerciseTapBtn = document.getElementById("exerciseTapBtn");
+    const exerciseScore = document.getElementById("exerciseScore");
+    const exerciseStatus = document.getElementById("exerciseStatus");
+    const exerciseLastError = document.getElementById("exerciseLastError");
+    const exerciseBestScore = document.getElementById("exerciseBestScore");
+    const exerciseStreak = document.getElementById("exerciseStreak");
     const toastMsg = document.getElementById("toastMsg");
     let toastTimer = null;
     let tapTimes = [];
     let tapResetTimer = null;
+    const exercise = {
+      active: false,
+      startAt: 0,
+      lastBeat: -1,
+      attempts: 0,
+      totalScore: 0,
+      bestScore: 0,
+      streak: 0,
+      bestStreak: 0
+    };
 
     function showToast(msg) {
       toastMsg.textContent = msg;
@@ -1818,6 +1925,80 @@
     // =========================================================================
     // 5. MISE À JOUR DE L'INTERFACE SYNCHRONISÉE
     // =========================================================================
+    function updateExerciseUI() {
+      if (!exercise.attempts) {
+        exerciseScore.textContent = "—";
+      } else {
+        exerciseScore.textContent = `${Math.round(exercise.totalScore / exercise.attempts)}/100`;
+      }
+      exerciseBestScore.textContent = exercise.bestScore ? `${exercise.bestScore}` : "—";
+      exerciseStreak.textContent = exercise.streak;
+      exerciseTapBtn.disabled = !exercise.active;
+      exerciseTapBtn.classList.toggle("active", exercise.active);
+      startExerciseBtn.textContent = exercise.active ? "Arrêter l’exercice" : "Démarrer l’exercice";
+    }
+
+    function startOrStopExercise() {
+      if (exercise.active) {
+        exercise.active = false;
+        exerciseStatus.textContent = `Exercice arrêté — moyenne ${exercise.attempts ? Math.round(exercise.totalScore / exercise.attempts) : 0}/100.`;
+        updateExerciseUI();
+        return;
+      }
+
+      exercise.active = true;
+      exercise.attempts = 0;
+      exercise.totalScore = 0;
+      exercise.streak = 0;
+      exercise.lastBeat = -1;
+      const beatMs = 60000 / (state.bpm * state.speed);
+      const untilNextBeat = state.isPlaying ? Math.max(80, (1 - state.beatProgress) * beatMs) : beatMs * 4;
+      exercise.startAt = performance.now() + untilNextBeat;
+      exerciseStatus.textContent = state.isPlaying
+        ? `Préparez-vous… premier battement dans ${Math.round(untilNextBeat)} ms.`
+        : `Préparation de 4 temps… tempo cible : ${Math.round(state.bpm * state.speed)} BPM.`;
+      if (!state.isPlaying) startPlayback();
+      updateExerciseUI();
+    }
+
+    function scoreExerciseTap() {
+      if (!exercise.active) return;
+      const now = performance.now();
+      if (now < exercise.startAt) {
+        exerciseStatus.textContent = `Attendez le départ… ${Math.ceil((exercise.startAt - now) / 1000)} s.`;
+        return;
+      }
+
+      const beatMs = 60000 / (state.bpm * state.speed);
+      const elapsed = now - exercise.startAt;
+      const beatIndex = Math.max(0, Math.round(elapsed / beatMs));
+      if (beatIndex <= exercise.lastBeat) return;
+
+      const skipped = Math.max(0, beatIndex - exercise.lastBeat - 1);
+      exercise.attempts += skipped;
+      exercise.totalScore += 0;
+      exercise.streak = 0;
+
+      const expectedAt = exercise.startAt + beatIndex * beatMs;
+      const errorMs = now - expectedAt;
+      const absError = Math.abs(errorMs);
+      const maxError = beatMs * 0.35;
+      const score = Math.max(0, Math.round(100 * (1 - absError / maxError)));
+      exercise.attempts += 1;
+      exercise.totalScore += score;
+      exercise.bestScore = Math.max(exercise.bestScore, score);
+      exercise.streak = score >= 70 ? exercise.streak + 1 : 0;
+      exercise.bestStreak = Math.max(exercise.bestStreak, exercise.streak);
+      exercise.lastBeat = beatIndex;
+      exerciseLastError.textContent = `${errorMs >= 0 ? "+" : ""}${Math.round(errorMs)} ms`;
+      exerciseStatus.textContent = score >= 90
+        ? `Excellent — ${score}/100 (${errorMs >= 0 ? "en retard" : "en avance"}).`
+        : score >= 70
+          ? `Bon geste — ${score}/100, resserrez légèrement le ${errorMs >= 0 ? "retard" : "avance"}.`
+          : `À corriger — ${score}/100, écart de ${Math.round(absError)} ms.`;
+      updateExerciseUI();
+    }
+
     function renderDetailView() {
       const m = state.currentMeasure;
       const mInfo = SCORE_DATA[m - 1];
@@ -2257,7 +2438,8 @@
       const isTyping = target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable);
       if (event.code === "Space" && !isTyping) {
         event.preventDefault();
-        registerTapTempo();
+        if (exercise.active) scoreExerciseTap();
+        else registerTapTempo();
       }
     });
 
@@ -2326,6 +2508,25 @@
     detailModal.addEventListener("click", (e) => {
       if (e.target === detailModal) detailModal.classList.add("hidden");
     });
+
+    openExerciseBtn.addEventListener("click", () => {
+      exerciseModal.classList.remove("hidden");
+      updateExerciseUI();
+    });
+    closeExerciseBtn.addEventListener("click", () => {
+      exercise.active = false;
+      exerciseModal.classList.add("hidden");
+      updateExerciseUI();
+    });
+    exerciseModal.addEventListener("click", (e) => {
+      if (e.target === exerciseModal) {
+        exercise.active = false;
+        exerciseModal.classList.add("hidden");
+        updateExerciseUI();
+      }
+    });
+    startExerciseBtn.addEventListener("click", startOrStopExercise);
+    exerciseTapBtn.addEventListener("click", scoreExerciseTap);
 
     // =========================================================================
     // 9. DÉMARRAGE AU CHARGEMENT
