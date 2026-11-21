@@ -1419,7 +1419,7 @@
         this.hasCustomFile = false;
       }
 
-      syncCustomAudio(measure, speed, shouldPlay) {
+      syncCustomAudio(measure, speed, shouldPlay, forceSeek = false) {
         if (!this.hasCustomFile || !this.customAudio) return;
         const secPerMeasure = (60 / BASE_BPM) * 4;
         const targetTime = Math.max(0, (measure - 1) * secPerMeasure);
@@ -1429,11 +1429,10 @@
           // sa vitesse de lecture sans déplacer les repères de mesure.
           this.customAudio.playbackRate = (state.bpm * speed) / BASE_BPM;
 
-          // currentTime n’est pas toujours modifiable avant loadedmetadata
-          // (notamment dans les navigateurs mobiles). La partition continue
-          // tout de même son horloge visuelle pendant que le fichier se prépare.
-          if (this.customAudioReady && Number.isFinite(this.customAudio.duration) &&
-              Math.abs(this.customAudio.currentTime - targetTime) > 0.35) {
+          // On ne recale le fichier que lors d’un vrai déplacement utilisateur
+          // (mesure cliquée, reset ou démarrage), jamais à chaque temps.
+          // Pendant la lecture, audio.currentTime est l’horloge principale.
+          if (forceSeek && this.customAudioReady && Number.isFinite(this.customAudio.duration)) {
             this.customAudio.currentTime = Math.min(targetTime, this.customAudio.duration);
           }
 
@@ -1465,6 +1464,7 @@
       countInBeat: 0, // 0, 1, 2, 3
       speed: 1.0,
       bpm: BASE_BPM,
+      audioOffset: 0,
       loopSection: false,
       currentMeasure: 1,
       currentBeat: 0, // 0, 1, 2, 3
@@ -1569,6 +1569,7 @@
       document.querySelectorAll(".speed-btn").forEach(btn =>
         btn.classList.toggle("active", btn.dataset.speed === "1")
       );
+      audioEngine.syncCustomAudio(state.currentMeasure, state.speed, state.isPlaying);
       updateUI(false);
       showToast(`Tempo défini à ${state.bpm} BPM`);
     }
@@ -1880,6 +1881,7 @@
         state.isCountIn = false;
         triggerBeat(state.currentMeasure, state.currentBeat, false);
       }
+      audioEngine.syncCustomAudio(state.currentMeasure, state.speed, true, true);
       state.lastTime = performance.now();
     }
 
@@ -1899,7 +1901,7 @@
       state.currentBeat = 0;
       state.beatProgress = 0;
       playBtnText.textContent = "Démarrer (Levée)";
-      audioEngine.syncCustomAudio(1, state.speed, false);
+      audioEngine.syncCustomAudio(1, state.speed, false, true);
       updateUI(true);
     }
 
@@ -1911,10 +1913,33 @@
       if (autoStart && !state.isPlaying) {
         startPlayback();
       } else if (state.isPlaying) {
+        audioEngine.syncCustomAudio(state.currentMeasure, state.speed, true, true);
         triggerBeat(state.currentMeasure, 0, false);
       } else {
         updateUI(true);
       }
+    }
+
+    function updateStateFromCustomAudio() {
+      const audio = audioEngine.customAudio;
+      if (!audio || !audioEngine.customAudioReady || !Number.isFinite(audio.currentTime)) return false;
+
+      // Le BPM effectif tient compte du tap tempo et du multiplicateur 70/85/100 %.
+      const effectiveBpm = state.bpm * state.speed;
+      const musicalSeconds = Math.max(0, audio.currentTime - state.audioOffset);
+      const maxBeats = TOTAL_MEASURES * 4 - Number.EPSILON;
+      const absoluteBeat = Math.min(maxBeats, musicalSeconds * effectiveBpm / 60);
+      const nextMeasure = Math.floor(absoluteBeat / 4) + 1;
+      const nextBeat = Math.floor(absoluteBeat % 4);
+      const nextProgress = absoluteBeat % 1;
+      const changed = nextMeasure !== state.currentMeasure || nextBeat !== state.currentBeat;
+
+      state.isCountIn = false;
+      state.currentMeasure = nextMeasure;
+      state.currentBeat = nextBeat;
+      state.beatProgress = nextProgress;
+      if (changed) updateUI(nextBeat === 0);
+      return true;
     }
 
     function animationLoop(now) {
@@ -1927,10 +1952,18 @@
       }
 
       if (state.isPlaying) {
-        const beatDuration = (60 / state.bpm) / state.speed;
-        state.beatProgress += dt / beatDuration;
+        const hasCustomAudio = audioEngine.hasCustomFile && audioEngine.customAudio;
+        if (hasCustomAudio && audioEngine.customAudio.ended) {
+          pausePlayback();
+          showToast("Fin de l’audio personnalisé.");
+        } else if (hasCustomAudio && !audioEngine.customAudio.paused && updateStateFromCustomAudio()) {
+          // MP3 maître : la boucle interne ne modifie pas la position musicale.
+        } else {
+          // Repli pendant le chargement ou si le navigateur refuse play().
+          const beatDuration = (60 / state.bpm) / state.speed;
+          state.beatProgress += dt / beatDuration;
 
-        while (state.beatProgress >= 1.0 && state.isPlaying) {
+          while (state.beatProgress >= 1.0 && state.isPlaying) {
           state.beatProgress -= 1.0;
 
           if (state.isCountIn) {
@@ -1967,6 +2000,7 @@
             }
             triggerBeat(state.currentMeasure, state.currentBeat, false);
           }
+        }
         }
       }
 

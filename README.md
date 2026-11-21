@@ -34,7 +34,8 @@ Puis ouvrir <http://localhost:8000>.
 - La lecture visuelle est maintenant **indépendante de Web Audio** : si le contexte audio est bloqué par un navigateur mobile, une webview ou une permission, la baguette, les mesures et le prompteur continuent malgré tout à défiler.
 - Le chargement d’un **MP3/WAV attend ses métadonnées avant de chercher une position**, ce qui évite l’erreur fréquente de `currentTime` sur mobile.
 - Les erreurs de décodage, de lecture automatique ou de synchronisation du fichier audio sont isolées : elles ne peuvent plus arrêter la boucle de direction.
-- L’audio importé reste synchronisé par mesure lorsqu’il est disponible, tandis que le conducteur conserve sa propre horloge de battue.
+- Lorsque le MP3 joue, **`audio.currentTime` devient l’horloge principale** : il pilote la mesure, le temps, la progression de la baguette et le prompteur. L’horloge interne ne sert plus que de repli pendant le chargement ou si la lecture est refusée.
+- Les recalages audio automatiques à chaque temps ont été supprimés. Un repositionnement n’est effectué que lors d’un démarrage, d’un reset ou d’un déplacement volontaire vers une mesure.
 - Le **Tap tempo** utilise les dernières pulsations, une médiane résistante aux taps accidentels et une plage sécurisée de 40 à 180 BPM. Il ajuste la battue, le métronome, le synthétiseur et la vitesse de l’audio importé.
 
 ## Choix techniques
@@ -45,11 +46,11 @@ La compatibilité audio est progressive : l’application reste utilisable pour 
 
 ## Pistes d’amélioration
 
-1. Ajouter une vraie horloge audio de référence pour synchroniser encore plus précisément un MP3 long, notamment entre deux mesures.
+1. Ajouter un réglage de décalage audio et deux points de calibration pour les fichiers qui commencent par un silence ou dont le tempo diffère de 100 BPM.
 2. Prévoir une vue responsive dédiée aux petits écrans et un mode paysage optimisé pour tablette.
 3. Ajouter un réglage de volume séparé pour le clic et l’accompagnement synthétisé.
 4. Permettre de choisir la mesure de départ de la levée et d’afficher un compte à rebours plus explicite.
-5. Ajouter un mode d’entraînement avec suivi du tempo réel de l’utilisateur via le microphone ou un bouton de tap tempo.
+5. Ajouter un mode de détection du geste via la caméra ou le microphone, avec accord explicite de l’utilisateur.
 6. Découper progressivement les données musicales et le moteur d’interface en modules JavaScript lorsque le prototype s’enrichira.
 
 ## Crédits et droits
