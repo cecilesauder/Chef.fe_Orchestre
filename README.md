@@ -2,7 +2,7 @@
 
 Application web pédagogique pour s’entraîner à diriger un orchestre sur **The Hanging Tree**, dans l’arrangement de Juliette Penin interprété par l’Orchestre du Nouveau Monde.
 
-Le prototype propose un conducteur annoté de 62 mesures, une battue animée à 4 temps, un prompteur de gestes de la main gauche et un accompagnement sonore synthétisé à 100 BPM.
+L’application propose un conducteur annoté de 62 mesures, une battue animée à 4 temps, un prompteur de gestes de la main gauche, un accompagnement sonore synthétisé et plusieurs outils d’entraînement à la précision.
 
 ## Utiliser l’application
 
@@ -31,6 +31,15 @@ Puis ouvrir <http://localhost:8000>.
 - **Exercice** : mesure automatiquement la précision des taps de l’utilisateur par rapport au tempo cible.
 - **Historique** : conserve localement les sessions terminées pour suivre la moyenne, le meilleur tap et le nombre de sessions.
 
+## Parcours conseillé
+
+1. Ouvrir le **Guide 4/4** pour revoir la figure de battue et les rôles respectifs des deux mains.
+2. Cliquer sur **Démarrer** et observer la levée, les temps, la mesure active et le mouvement de la baguette.
+3. Utiliser **Détails** pour étudier la nuance, l’amplitude recommandée, le geste de la main gauche et les pupitres à préparer.
+4. Charger éventuellement un MP3/WAV local. Pendant sa lecture, sa position réelle pilote la mesure et le prompteur via `audio.currentTime`.
+5. Utiliser **Tap tempo** si le tempo doit être défini à partir de pulsations jouées par l’utilisateur.
+6. Ouvrir **Exercice**, attendre la préparation, puis taper avec la touche Espace ou le bouton prévu. Arrêter la session pour l’enregistrer dans l’historique.
+
 ## Corrections récentes
 
 - La **main gauche est maintenant affichée à gauche** et la **main droite avec la baguette à droite**, conformément à la lecture naturelle du chef depuis le point de vue de l’utilisateur.
@@ -50,6 +59,10 @@ Le projet est volontairement autonome : une seule page HTML contient la structur
 
 La compatibilité audio est progressive : l’application reste utilisable pour travailler les gestes et les indications même si un navigateur refuse le son, si le fichier n’est pas encore prêt ou si le format audio n’est pas décodable.
 
+## Données et confidentialité
+
+Les fichiers MP3/WAV sont lus localement par le navigateur et ne sont pas envoyés au dépôt. Les scores d’exercice sont conservés uniquement dans le `localStorage` du navigateur utilisé ; ils ne suivent pas automatiquement l’utilisateur sur un autre appareil ou un autre navigateur. Le bouton **Effacer** supprime cet historique local.
+
 ## Pistes d’amélioration
 
 1. Ajouter un réglage de décalage audio et deux points de calibration pour les fichiers qui commencent par un silence ou dont le tempo diffère de 100 BPM.
@@ -58,6 +71,10 @@ La compatibilité audio est progressive : l’application reste utilisable pour 
 4. Permettre de choisir la mesure de départ de la levée et d’afficher un compte à rebours plus explicite.
 5. Ajouter un mode de détection du geste via la caméra ou le microphone, avec accord explicite de l’utilisateur.
 6. Découper progressivement les données musicales et le moteur d’interface en modules JavaScript lorsque le prototype s’enrichira.
+
+## Validation actuelle
+
+La version publiée a été vérifiée dans Chromium headless avec un chargement complet de la page et sans erreur JavaScript. Le scénario fonctionnel vérifié couvre l’ouverture de la vue détaillée, le calcul du **Tap tempo** à 120 BPM, le démarrage d’un exercice, le calcul d’une note et l’enregistrement d’une session dans l’historique local.
 
 ## Crédits et droits
 
