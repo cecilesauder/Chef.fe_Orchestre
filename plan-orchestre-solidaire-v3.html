@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plan d'Orchestre Solidaire (Configuration à plat)</title>
+  <style>
+    :root {
+      --bg: #12151c;
+      --panel: #1b202b;
+      --border: #2c3446;
+      --text: #f0f4f8;
+      --muted: #94a3b8;
+      --cordes: #f59e0b;
+      --bois: #10b981;
+      --cuivres: #ef4444;
+      --percus: #8b5cf6;
+      --choeur: #3b82f6;
+      --podium: #eab308;
+    }
+
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+    body {
+      margin: 0;
+      padding: 20px;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .orchestra-app {
+      width: 100%;
+      max-width: 1120px;
+      display: grid;
+      grid-template-columns: 310px 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 850px) {
+      .orchestra-app { grid-template-columns: 1fr; }
+    }
+
+    .controls {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .controls h2 { margin: 0 0 4px 0; font-size: 1.1rem; }
+    .controls p { margin: 0; font-size: 0.85rem; color: var(--muted); }
+
+    .family-group {
+      border-top: 1px solid var(--border);
+      padding-top: 8px;
+    }
+    .family-title {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 700;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+    .toggle-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      transition: background 0.15s;
+    }
+    .toggle-item:hover { background: rgba(255,255,255,0.05); }
+    .toggle-item input { accent-color: var(--podium); cursor: pointer; transform: scale(1.1); }
+
+    .stage-container {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .stage-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .badge-flat {
+      background: rgba(234, 179, 8, 0.15);
+      color: #fde047;
+      border: 1px solid rgba(234, 179, 8, 0.4);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    svg {
+      width: 100%;
+      height: auto;
+      background: radial-gradient(circle at 50% 92%, #232a38 0%, #141820 75%);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .desk-node {
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+    .desk-node:hover rect {
+      stroke: #ffffff;
+      stroke-width: 2.5px;
+    }
+
+    .info-bar {
+      margin-top: 12px;
+      padding: 12px 16px;
+      background: #141820;
+      border-left: 4px solid var(--podium);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+    .info-bar strong { color: #fde047; }
+  </style>
+</head>
+<body>
+
+  <div class="orchestra-app">
+    <aside class="controls">
+      <div>
+        <h2>🎻 Effectif de la répétition</h2>
+        <p>Cochez les pupitres présents : le placement à plat s'adapte selon les postures (assis / debout).</p>
+      </div>
+      <div id="controls-list"></div>
+    </aside>
+
+    <main class="stage-container">
+      <div class="stage-header">
+        <strong>Vue depuis le podium (Chef·fe surélevé·e)</strong>
+        <span class="badge-flat">Configuration à plat • Violoncelles seuls assis</span>
+      </div>
+
+      <svg id="orchestra-svg" viewBox="0 0 800 510" xmlns="http://www.w3.org/2000/svg">
+        <g stroke="#2c3446" stroke-width="1" stroke-dasharray="4 4" fill="none">
+          <path d="M 400 450 L 110 130" />
+          <path d="M 400 450 L 400 60" />
+          <path d="M 400 450 L 690 130" />
+          <circle cx="400" cy="450" r="150" />
+          <circle cx="400" cy="450" r="265" />
+          <circle cx="400" cy="450" r="375" />
+        </g>
+
+        <g fill="#64748b" font-size="12" font-weight="bold" text-anchor="middle">
+          <text x="140" y="120">10h (Aile Gauche - Debout)</text>
+          <text x="400" y="48">12h (Centre - Trouée visuelle)</text>
+          <text x="660" y="120">2h (Aile Droite - Debout)</text>
+        </g>
+
+        <g id="desks-layer"></g>
+
+        <g transform="translate(400, 455)">
+          <rect x="-60" y="-22" width="120" height="44" rx="8" fill="#eab308" fill-opacity="0.2" stroke="#eab308" stroke-width="2" />
+          <text x="0" y="-2" fill="#fde047" font-size="12" font-weight="bold" text-anchor="middle">PODIUM CHEF·FE</text>
+          <text x="0" y="13" fill="#fef08a" font-size="10" text-anchor="middle">(Surélevé +20cm)</text>
+        </g>
+      </svg>
+
+      <div class="info-bar" id="info-bar">
+        💡 <strong>Astuce :</strong> Cliquez sur un pupitre pour voir son angle de direction et l'adaptation à plat (Flûtes 1 & 2 en miroir des Violons 1 & 2).
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const SECTIONS = [
+      // AILE GAUCHE (Violons debout)
+      {
+        id: "violons1",
+        name: "Violons 1 (Debout)",
+        family: "Cordes",
+        color: "#f59e0b",
+        active: true,
+        x: 215, y: 350, w: 135, h: 42, angle: -25,
+        clock: "9h30 - 10h",
+        tip: "1er rang à gauche, debout : ils donnent la pulsation visuelle à l'aile gauche. Leur table d'harmonie projette le son vers le centre."
+      },
+      {
+        id: "violons2",
+        name: "Violons 2 & Altos (Debout)",
+        family: "Cordes",
+        color: "#f59e0b",
+        active: true,
+        x: 185, y: 275, w: 145, h: 42, angle: -25,
+        clock: "10h",
+        tip: "2e rang gauche debout, décalés en quinconce entre les Violons 1 pour garder une ligne de vue directe vers la baguette."
+      },
+
+      // AILE DROITE (Flûtes 1 et 2 en miroir des Violons !)
+      {
+        id: "flutes1",
+        name: "Flûtes 1 & Hautbois (Debout)",
+        family: "Bois",
+        color: "#10b981",
+        active: true,
+        x: 585, y: 350, w: 155, h: 42, angle: 25,
+        clock: "2h - 2h30",
+        tip: "1er rang à droite, debout en miroir des Violons 1 : contact visuel direct avec le chef et projection sonore non bloquée."
+      },
+      {
+        id: "flutes2",
+        name: "Flûtes 2 & Clarinettes (Debout)",
+        family: "Bois",
+        color: "#10b981",
+        active: true,
+        x: 615, y: 275, w: 165, h: 42, angle: 25,
+        clock: "2h",
+        tip: "2e rang à droite debout, placés en quinconce derrière les Flûtes 1 pour voir le podium sans obstacle et dialoguer avec les Violons 2."
+      },
+
+      // CENTRE (Violoncelles seuls assis = trouée visuelle !)
+      {
+        id: "violoncelles",
+        name: "Violoncelles (Assis)",
+        family: "Cordes",
+        color: "#f59e0b",
+        active: true,
+        x: 400, y: 325, w: 145, h: 42, angle: 0,
+        clock: "12h (Plein centre)",
+        tip: "Seul pupitre assis : placés au centre devant le podium, ils libèrent la vue au-dessus de leurs têtes pour les rangs situés au fond !"
+      },
+      {
+        id: "bassons",
+        name: "Bassons & Cors (Debout)",
+        family: "Bois",
+        color: "#10b981",
+        active: false,
+        x: 400, y: 245, w: 145, h: 40, angle: 0,
+        clock: "12h (2e rang)",
+        tip: "Profitent directement de la trouée visuelle au-dessus des violoncelles assis pour voir le chef sans aucune gêne."
+      },
+
+      // FOND & DEBOUT
+      {
+        id: "contrebasses",
+        name: "Contrebasses (Debout)",
+        family: "Cordes",
+        color: "#f59e0b",
+        active: true,
+        x: 665, y: 185, w: 145, h: 40, angle: 35,
+        clock: "1h30 (Au fond)",
+        tip: "Debout au fond à droite : leur grande taille leur permet de voir par-dessus les deux rangs de flûtes et clarinettes."
+      },
+      {
+        id: "cuivres",
+        name: "Trompettes & Trombones",
+        family: "Cuivres",
+        color: "#ef4444",
+        active: true,
+        x: 325, y: 165, w: 155, h: 40, angle: -10,
+        clock: "11h30 (Fond centre)",
+        tip: "Placés au fond dans l'axe central : ils voient le chef par-dessus les violoncelles assis, et leur puissance traverse l'orchestre."
+      },
+      {
+        id: "percus",
+        name: "Percussions (Debout)",
+        family: "Percussions",
+        color: "#8b5cf6",
+        active: true,
+        x: 500, y: 140, w: 145, h: 40, angle: 12,
+        clock: "12h30 (Fond)",
+        tip: "Debout tout au fond dans l'axe central dégagé par les violoncelles assis."
+      },
+
+      // CHŒUR À PLAT
+      {
+        id: "choeur",
+        name: "Chœur (Ailes latérales)",
+        family: "Voix",
+        color: "#3b82f6",
+        active: false,
+        x: 105, y: 165, w: 135, h: 42, angle: -40,
+        clock: "9h & 3h (Côtés)",
+        tip: "Comme les violons et flûtes sont debout, le chœur doit impérativement être sur les ailes latérales (et non derrière eux) à plat."
+      }
+    ];
+
+    const controlsList = document.getElementById("controls-list");
+    const desksLayer = document.getElementById("desks-layer");
+    const infoBar = document.getElementById("info-bar");
+
+    function renderControls() {
+      const families = ["Cordes", "Bois", "Cuivres", "Percussions", "Voix"];
+      const colors = {
+        Cordes: "#f59e0b",
+        Bois: "#10b981",
+        Cuivres: "#ef4444",
+        Percussions: "#8b5cf6",
+        Voix: "#3b82f6"
+      };
+
+      controlsList.innerHTML = "";
+
+      families.forEach(fam => {
+        const items = SECTIONS.filter(s => s.family === fam);
+        if (!items.length) return;
+
+        const group = document.createElement("div");
+        group.className = "family-group";
+        group.innerHTML = `
+          <div class="family-title">
+            <span class="dot" style="background:${colors[fam]}"></span>
+            ${fam}
+          </div>
+        `;
+
+        items.forEach(sec => {
+          const label = document.createElement("label");
+          label.className = "toggle-item";
+          label.innerHTML = `
+            <span>${sec.name}</span>
+            <input type="checkbox" ${sec.active ? "checked" : ""} data-id="${sec.id}" />
+          `;
+          label.querySelector("input").addEventListener("change", (e) => {
+            sec.active = e.target.checked;
+            renderStage();
+          });
+          group.appendChild(label);
+        });
+
+        controlsList.appendChild(group);
+      });
+    }
+
+    function renderStage() {
+      desksLayer.innerHTML = "";
+      const centerPresent = SECTIONS.find(s => s.id === "violoncelles").active;
+
+      SECTIONS.forEach(sec => {
+        if (!sec.active) return;
+
+        let posX = sec.x;
+        if (!centerPresent) {
+          if (sec.id === "violons1" || sec.id === "violons2") posX += 45;
+          if (sec.id === "flutes1" || sec.id === "flutes2") posX -= 45;
+        }
+
+        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        g.setAttribute("class", "desk-node");
+        g.setAttribute("transform", `translate(${posX}, ${sec.y}) rotate(${sec.angle})`);
+
+        const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        rect.setAttribute("x", -sec.w / 2);
+        rect.setAttribute("y", -sec.h / 2);
+        rect.setAttribute("width", sec.w);
+        rect.setAttribute("height", sec.h);
+        rect.setAttribute("rx", 8);
+        rect.setAttribute("fill", sec.color);
+        rect.setAttribute("fill-opacity", "0.22");
+        rect.setAttribute("stroke", sec.color);
+        rect.setAttribute("stroke-width", "1.8");
+
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute("x", 0);
+        text.setAttribute("y", 4);
+        text.setAttribute("fill", "#f8fafc");
+        text.setAttribute("font-size", "11");
+        text.setAttribute("font-weight", "600");
+        text.setAttribute("text-anchor", "middle");
+        text.textContent = sec.name;
+
+        g.appendChild(rect);
+        g.appendChild(text);
+
+        g.addEventListener("click", () => {
+          infoBar.innerHTML = `
+            🎵 <strong>${sec.name}</strong> — Direction : <strong>${sec.clock}</strong><br/>
+            ${sec.tip}
+          `;
+        });
+
+        desksLayer.appendChild(g);
+
+        if (sec.id === "choeur") {
+          const gRight = g.cloneNode(true);
+          gRight.setAttribute("transform", `translate(695, 165) rotate(40)`);
+          gRight.addEventListener("click", () => {
+            infoBar.innerHTML = `
+              🎵 <strong>Chœur (Aile droite)</strong> — Direction : <strong>3h</strong><br/>
+              ${sec.tip}
+            `;
+          });
+          desksLayer.appendChild(gRight);
+        }
+      });
+    }
+
+    renderControls();
+    renderStage();
+  </script>
+</body>
+</html>
