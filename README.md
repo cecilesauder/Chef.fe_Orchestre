@@ -5,7 +5,7 @@ Application web pédagogique pour s’entraîner à diriger l’arrangement de *
 ## Lancer l’application
 
 - Version publiée : <https://cecilesauder.github.io/Chef.fe_Orchestre/>
-- En local : ouvrir [`index.html`](./index.html) dans un navigateur récent, ou démarrer un serveur avec `python3 -m http.server 8000`, puis ouvrir <http://localhost:8000>.
+
 
 ## Fonctionnalités
 
@@ -23,7 +23,7 @@ L’application ne contient pas l’enregistrement. Les fichiers MP3/WAV sélect
 
 ## Crédits
 
-- Œuvre : *The Hanging Tree*.
+- Œuvre : *The Hanging Tree*. J.N Howard
 - Arrangement : Juliette Penin.
 - Partition et enregistrement de référence : Orchestre du Nouveau Monde.
 
