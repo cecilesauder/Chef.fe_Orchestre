@@ -2,11 +2,14 @@
 
 Application web pédagogique pour s’entraîner à diriger un orchestre sur **The Hanging Tree**, dans l’arrangement de Juliette Penin interprété par l’Orchestre du Nouveau Monde.
 
-L’application propose un conducteur annoté de 62 mesures, une battue animée à 4 temps, un prompteur de gestes de la main gauche, un accompagnement sonore synthétisé et plusieurs outils d’entraînement à la précision.
+L’application propose un conducteur annoté de 62 mesures, une battue animée à 4 temps, un prompteur de gestes de la main gauche, un accompagnement sonore synthétisé et plusieurs outils d’entraînement à la précision, basé sur la partition de l'orchestre du Nouveau Monde. 
 
 ## Utiliser l’application
 
-Aucune installation n’est nécessaire : ouvrir [`index.html`](./index.html) dans un navigateur moderne.
+2 options :
+
+1. lien direct : <https://cecilesauder.github.io/Chef.fe_Orchestre/>
+2.  ouvrir [`index.html`](./index.html) dans un navigateur moderne.
 
 Pour la tester depuis un serveur local :
 
