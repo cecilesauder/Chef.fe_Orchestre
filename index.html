@@ -193,6 +193,13 @@
       background-color: rgba(56, 189, 248, 0.22);
       color: #fff;
     }
+    .tempo-help {
+      margin: 7px 0 0;
+      color: var(--text-muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+    .tempo-help strong { color: #bae6fd; }
 
     .btn-toggle-on {
       border-color: rgba(245, 158, 11, 0.5);
@@ -1103,8 +1110,8 @@
           </div>
 
           <!-- Tap tempo : bouton ou touche Espace -->
-          <button id="tapTempoBtn" class="tap-tempo-btn" title="Tapotez plusieurs fois ou appuyez sur Espace">
-            <span>Tap tempo</span>
+          <button id="tapTempoBtn" class="tap-tempo-btn" title="Tapez 4 fois régulièrement, ou utilisez Espace, pour régler le BPM">
+            <span>Tap tempo · 4 taps</span>
           </button>
 
           <!-- Clic Métronome -->
@@ -1141,6 +1148,7 @@
             <span>Guide 4/4</span>
           </button>
         </div>
+        <p class="tempo-help"><strong>Tap tempo :</strong> tapez 4 fois régulièrement sur le bouton ou avec Espace pour régler le BPM. Facultatif : utilisez 70 %, 85 % ou 100 % pour un tempo prédéfini.</p>
       </div>
 
       <!-- Barre de sélection rapide des sections -->
@@ -2507,7 +2515,8 @@
         triggerBeat(state.currentMeasure, state.currentBeat, false);
       }
       audioEngine.syncCustomAudio(state.currentMeasure, state.speed, true, true);
-      state.lastTime = performance.now();
+      // La boucle utilisera la même horloge monotone que les callbacks suivants.
+      state.lastTime = 0;
     }
 
     function pausePlayback() {
@@ -2567,9 +2576,11 @@
       return true;
     }
 
-    function animationLoop(now) {
-      if (!state.lastTime) state.lastTime = now;
-      const dt = (now - state.lastTime) / 1000;
+    function animationLoop() {
+      // Utiliser performance.now() partout évite les écarts de base temporelle
+      // entre le timestamp requestAnimationFrame et les actions utilisateur.
+      const now = performance.now();
+      const dt = state.lastTime ? Math.min(0.1, Math.max(0, (now - state.lastTime) / 1000)) : 0;
       state.lastTime = now;
 
       if (state.ictusFlash > 0) {

@@ -21,7 +21,7 @@ Puis ouvrir <http://localhost:8000>.
 - **Démarrer / Pause / Reprendre** : lance la levée de préparation puis la battue synchronisée.
 - **Réinitialiser** : revient à la mesure 1.
 - **70 %, 85 %, 100 %** : modifie le tempo et l’affichage du BPM.
-- **Tap tempo** : tapoter plusieurs fois sur le bouton, ou appuyer sur **Espace**, pour faire suivre la baguette au tempo de l’utilisateur.
+- **Tap tempo** : taper **4 fois régulièrement** sur le bouton, ou avec **Espace**, pour calculer et appliquer le BPM de l’utilisateur. Cette commande est utile pour travailler à un tempo personnel ; elle est facultative si les vitesses 70 %, 85 % et 100 % conviennent.
 - **Clic** : active ou désactive le métronome.
 - **Boucle** : répète la section musicale active.
 - **MP3/WAV** : charge un enregistrement local pour remplacer le synthétiseur intégré.
@@ -37,7 +37,7 @@ Puis ouvrir <http://localhost:8000>.
 2. Cliquer sur **Démarrer** et observer la levée, les temps, la mesure active et le mouvement de la baguette.
 3. Utiliser **Détails** pour étudier la nuance, l’amplitude recommandée, le geste de la main gauche et les pupitres à préparer.
 4. Charger éventuellement un MP3/WAV local. Pendant sa lecture, sa position réelle pilote la mesure et le prompteur via `audio.currentTime`.
-5. Utiliser **Tap tempo** si le tempo doit être défini à partir de pulsations jouées par l’utilisateur.
+5. Utiliser **Tap tempo** seulement si vous voulez définir votre propre vitesse : tapez quatre pulsations régulièrement espacées sur **Tap tempo · 4 taps** ou avec **Espace**. Le BPM est alors calculé à partir de l’intervalle médian entre les taps et appliqué à la baguette, au clic et à l’audio importé. Sinon, choisissez simplement 70 %, 85 % ou 100 %.
 6. Ouvrir **Exercice**, attendre la préparation, puis taper avec la touche Espace ou le bouton prévu. Observer le retour instantané sous le score : vert lorsque la pulsation est dans la fenêtre, bleu en cas d’avance et rouge en cas de retard. Arrêter la session pour l’enregistrer dans l’historique.
 
 ### Interpréter les couleurs du retour tempo
@@ -58,7 +58,7 @@ La couleur apparaît à la fois dans le message de feedback et sur le bouton **J
 - Les erreurs de décodage, de lecture automatique ou de synchronisation du fichier audio sont isolées : elles ne peuvent plus arrêter la boucle de direction.
 - Lorsque le MP3 joue, **`audio.currentTime` devient l’horloge principale** : il pilote la mesure, le temps, la progression de la baguette et le prompteur. L’horloge interne ne sert plus que de repli pendant le chargement ou si la lecture est refusée.
 - Les recalages audio automatiques à chaque temps ont été supprimés. Un repositionnement n’est effectué que lors d’un démarrage, d’un reset ou d’un déplacement volontaire vers une mesure.
-- Le **Tap tempo** utilise les dernières pulsations, une médiane résistante aux taps accidentels et une plage sécurisée de 40 à 180 BPM. Il ajuste la battue, le métronome, le synthétiseur et la vitesse de l’audio importé.
+- Le **Tap tempo** demande idéalement quatre pulsations régulièrement espacées. Il utilise les dernières pulsations, une médiane résistante aux taps accidentels et une plage sécurisée de 40 à 180 BPM. Il ajuste la battue, le métronome, le synthétiseur et la vitesse de l’audio importé ; il n’est pas nécessaire pour une utilisation simple avec les boutons 70 %, 85 % et 100 %.
 - La vue détaillée se met à jour avec la mesure active et propose un repère pédagogique distinct pour le geste de la main gauche et l’équilibre des pupitres.
 - Le mode exercice attribue une note sur 100, affiche l’écart en millisecondes, le meilleur score et la série de taps réussis. Pendant toute la session, un indicateur compare la position courante au battement théorique et colore le bouton de tap : vert « dans le tempo », bleu « en avance », rouge « en retard ». Une légende intégrée explique comment corriger chaque situation. La touche Espace et le bouton d’exercice sont utilisables comme geste de référence.
 - L’historique des exercices est stocké uniquement dans le `localStorage` du navigateur. Il affiche les dernières sessions et peut être effacé avec le bouton **Effacer** ; aucune donnée n’est envoyée au serveur.
@@ -84,7 +84,7 @@ Les fichiers MP3/WAV sont lus localement par le navigateur et ne sont pas envoy�
 
 ## Validation actuelle
 
-La version publiée a été vérifiée dans Chromium headless avec un chargement complet de la page et sans erreur JavaScript. Le scénario fonctionnel vérifié couvre l’ouverture de la vue détaillée, le calcul du **Tap tempo** à 120 BPM, le démarrage d’un exercice, le calcul d’une note, l’enregistrement d’une session dans l’historique local et la présence du nouvel indicateur de feedback temps réel. La vérification de syntaxe JavaScript passe également avec `node --check`.
+La version publiée a été vérifiée dans Chromium headless avec un chargement complet de la page et sans erreur JavaScript. Le scénario fonctionnel vérifié couvre l’ouverture de la vue détaillée, le passage de la levée à la mesure 1, le calcul du **Tap tempo** à 120 BPM avec quatre taps espacés de 500 ms, le démarrage d’un exercice, le calcul d’une note, l’enregistrement d’une session dans l’historique local et la présence du nouvel indicateur de feedback temps réel. La vérification de syntaxe JavaScript passe également avec `node --check`.
 
 ## Crédits et droits
 
