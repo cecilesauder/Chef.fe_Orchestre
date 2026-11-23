@@ -181,26 +181,6 @@
       color: var(--accent-amber);
     }
 
-    .tap-tempo-btn {
-      border-color: rgba(56, 189, 248, 0.45);
-      background-color: rgba(56, 189, 248, 0.10);
-      color: #bae6fd;
-      white-space: nowrap;
-    }
-
-    .tap-tempo-btn.listening {
-      border-color: var(--accent-sky);
-      background-color: rgba(56, 189, 248, 0.22);
-      color: #fff;
-    }
-    .tempo-help {
-      margin: 7px 0 0;
-      color: var(--text-muted);
-      font-size: 12px;
-      line-height: 1.4;
-    }
-    .tempo-help strong { color: #bae6fd; }
-
     .btn-toggle-on {
       border-color: rgba(169, 105, 115, 0.5);
       background-color: rgba(169, 105, 115, 0.14);
@@ -293,6 +273,24 @@
       }
       .brand-sub {
         display: none;
+      }
+      .panel-header {
+        flex-wrap: wrap;
+      }
+      .panel-header > .panel-label {
+        flex: 1 1 100%;
+      }
+      .panel-header-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
+      .panel-header-actions .dynamic-pill {
+        display: none;
+      }
+      .panel-header-actions button {
+        min-height: 32px;
+        padding: 5px 7px;
+        font-size: 10px;
       }
     }
 
@@ -1124,42 +1122,70 @@
       min-height: 36px;
     }
 
-    .orchestra-group-list {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 2px 6px;
-      max-height: 116px;
-      overflow-y: auto;
-      padding-top: 5px;
+    .orchestra-map-frame {
+      position: relative;
+      min-width: 0;
     }
 
-    .orchestra-group-toggle {
+    .orchestra-map-controls {
       display: flex;
+      width: 100%;
       align-items: center;
       gap: 5px;
-      min-width: 0;
+      margin-bottom: 5px;
+    }
+
+    .orchestra-presence-count {
+      margin-right: auto;
+      padding: 5px 7px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 7px;
+      background: rgba(23, 24, 29, .92);
+      color: var(--text-main);
+      font-size: 10px;
+      white-space: nowrap;
+    }
+
+    .orchestra-trash-zone,
+    .orchestra-restore-btn {
+      display: grid;
+      width: 36px;
+      height: 36px;
+      place-items: center;
+      padding: 0;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      background: rgba(23, 24, 29, .94);
       color: var(--text-muted);
-      font-size: 10px;
+      touch-action: none;
     }
 
-    .orchestra-group-toggle label { flex: 0 0 16px; display: grid; place-items: center; cursor: pointer; }
-    .orchestra-group-toggle input { accent-color: var(--accent-amber); }
-    .orchestra-group-toggle button {
-      flex: 1;
-      min-width: 0;
-      min-height: 40px;
-      padding: 4px 6px;
-      font-size: 10px;
+    .orchestra-trash-zone {
+      border-style: dashed;
+      border-color: #9c7379;
     }
 
-    .orchestra-roster {
-      border-top: 1px solid var(--border-subtle);
-      padding-top: 5px;
-      color: var(--text-muted);
-      font-size: 10px;
+    .orchestra-trash-zone.is-drop-target {
+      border-color: #ff9a9a;
+      background: #713e48;
+      color: #fff;
+      transform: scale(1.08);
     }
 
-    .orchestra-roster summary { cursor: pointer; font-weight: 700; }
+    .orchestra-trash-zone.is-disabled {
+      opacity: .45;
+    }
+
+    .orchestra-restore-btn:disabled {
+      opacity: .4;
+      cursor: not-allowed;
+    }
+
+    .orchestra-map-help {
+      margin: 0 0 5px;
+      color: var(--text-dim);
+      font-size: 10px;
+    }
 
     .orchestra-svg {
       width: 100%;
@@ -1175,7 +1201,6 @@
     .desk-node { cursor: grab; }
     .desk-node:active { cursor: grabbing; }
     .desk-node:focus-visible rect { stroke: #fff; stroke-width: 4; }
-    .desk-node.is-absent { opacity: .2; cursor: default; }
     .desk-node.is-playing rect {
       fill: #216347;
       fill-opacity: .82;
@@ -1233,7 +1258,6 @@
     .legend-swatch.is-playing { background: #216347; border-color: #70d7a4; color: #a4f0c8; }
     .legend-swatch.is-silent { background: #3a3d45; border: 1px dashed #aeb4be; color: #d3d7de; }
     .legend-swatch.is-cued { background: #967126; border-color: #fff0a2; color: #fff0a2; }
-    .legend-swatch.is-absent { background: #34363c; border-color: #777d87; color: #aaaeb6; }
 
     @media (prefers-reduced-motion: no-preference) {
       .desk-node.is-cued rect {
@@ -1368,11 +1392,6 @@
             <button class="speed-btn active" data-speed="1">100%</button>
           </div>
 
-          <!-- Tap tempo : bouton ou touche Espace -->
-          <button id="tapTempoBtn" class="tap-tempo-btn" title="Tapez 4 fois régulièrement, ou utilisez Espace, pour régler le BPM">
-            <span>Tap tempo · 4 taps</span>
-          </button>
-
           <!-- Clic Métronome -->
           <button id="metroBtn" class="btn-toggle-on">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -1407,7 +1426,6 @@
             <span>Guide 4/4</span>
           </button>
         </div>
-        <p class="tempo-help"><strong>Tap tempo :</strong> tapez 4 fois régulièrement sur le bouton ou avec Espace pour régler le BPM. Facultatif : utilisez 70 %, 85 % ou 100 % pour un tempo prédéfini.</p>
       </div>
 
       <!-- Barre de sélection rapide des sections -->
@@ -1457,10 +1475,10 @@
       <div class="panel-card">
         <div class="panel-header">
           <span class="panel-label">Main Gauche & Prompteur</span>
-          <span style="display:flex; align-items:center; gap:5px;">
+          <span class="panel-header-actions" style="display:flex; align-items:center; gap:5px;">
             <span class="dynamic-pill" id="dynamicBadge">ppp / mf</span>
             <button id="openDetailBtn" title="Ouvrir la vue détaillée">Détails</button>
-            <button id="openExerciseBtn" title="Évaluer la précision du geste">Exercice</button>
+            <button id="openExerciseBtn" title="Évaluer la précision du geste" aria-label="Ouvrir l’exercice">Exercice</button>
           </span>
         </div>
 
@@ -1482,13 +1500,13 @@
           <div class="prompter-box">
             <div class="prompter-top">
               <span class="measure-counter" id="prompterMeasure">Mes. 1/62 • Intro/C1</span>
-              <span class="next-cue-chip" id="nextCueChip">Dans 4 mes.</span>
+              <span class="next-cue-chip" id="nextCueChip">Préparer · 1 temps</span>
             </div>
             <div class="action-now-text" id="actionNowText">
               Temps 1 doux pour la nappe, puis regard & léger signe à Trompette 1 + Voix sur le 2e temps.
             </div>
             <div class="next-cue-text" id="nextCueText">
-              Prochain départ : Mes. 5 (Hautbois, Clar. 1, Basson)
+              Prochain départ : Mes. 1 — voix et trompette 1
             </div>
           </div>
         </div>
@@ -1508,7 +1526,22 @@
           <a class="source-link" href="https://drive.google.com/file/d/1L3KpcF_tF96cqktVMI78gtgKVVE-FxXz/view?usp=sharing" target="_blank" rel="noopener noreferrer">Partition PDF ↗</a>
         </div>
         <p class="orchestra-help">Le plan suit la mesure active : repérez les pupitres qui jouent, les silences d’une mesure entière et ceux à appeler.</p>
-        <svg id="orchestraSvg" class="orchestra-svg" viewBox="0 0 800 510" role="img" aria-label="Plan de l’orchestre vu depuis le podium">
+        <p class="orchestra-map-help">Faites glisser un pupitre vers la poubelle pour le retirer ; utilisez la flèche pour tout rétablir.</p>
+        <div class="orchestra-map-frame">
+          <div class="orchestra-map-controls">
+            <span id="orchestraPresenceCount" class="orchestra-presence-count" aria-live="polite"></span>
+            <div id="orchestraTrashZone" class="orchestra-trash-zone" role="group" aria-label="Déposer ici un pupitre à retirer" title="Déposer ici un pupitre pour le retirer">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="m19 6-1 14H6L5 6"/><path d="M10 11v5M14 11v5"/>
+              </svg>
+            </div>
+            <button id="restoreOrchestraBtn" class="orchestra-restore-btn" type="button" aria-label="Rétablir tous les pupitres" title="Rétablir tous les pupitres">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>
+              </svg>
+            </button>
+          </div>
+          <svg id="orchestraSvg" class="orchestra-svg" viewBox="0 0 800 510" role="img" aria-label="Plan de l’orchestre vu depuis le podium">
           <g stroke="#49303a" stroke-width="1" stroke-dasharray="4 4" fill="none">
             <path d="M 400 450 L 110 130" />
             <path d="M 400 450 L 400 60" />
@@ -1531,16 +1564,16 @@
             <text x="0" y="-2" fill="#d1afb3" font-size="12" font-weight="bold" text-anchor="middle">PODIUM</text>
             <text x="0" y="13" fill="#f8fafc" font-size="10" text-anchor="middle">CHEF·FE</text>
           </g>
-        </svg>
+          </svg>
+        </div>
         <div class="orchestra-legend" aria-label="Légende des états des pupitres">
           <span><i class="legend-swatch is-playing">♪</i> Joue</span>
           <span><i class="legend-swatch is-silent">—</i> Silence sur toute la mesure</span>
           <span><i class="legend-swatch is-cued">!</i> À appeler</span>
-          <span><i class="legend-swatch is-absent">×</i> Absent</span>
         </div>
         <div id="orchestraInfo" class="orchestra-info" aria-live="polite">Les états sont calculés à partir des notes et silences de chaque mesure de la partition. Un pupitre « joue » même s’il a des silences plus courts dans cette mesure.</div>
         <div class="simulation-toolbar">
-          <p id="simulationInstructions">Les pupitres en jeu et en silence suivent la partition mesure par mesure ; les entrées à signaler s’allument au moment de les appeler.</p>
+          <p id="simulationInstructions">Les états suivent la partition ; les entrées sont annoncées jusqu’à une mesure à l’avance.</p>
           <button id="startSimulationBtn" class="simulation-start-btn">Lancer la répétition</button>
         </div>
         <div class="simulation-stats" aria-live="polite">
@@ -1551,10 +1584,6 @@
           <span>Tempo : <strong id="simulationTempo">100 BPM</strong></span>
           <span>Nuance : <strong id="simulationDynamic">ppp / mf</strong></span>
         </div>
-        <details class="orchestra-roster" open>
-          <summary>Effectif • cochez les pupitres absents</summary>
-          <div id="orchestraGroupList" class="orchestra-group-list"></div>
-        </details>
         <div class="audio-reference">
           <a href="https://drive.google.com/uc?export=download&id=11zXnqzXyFb5kRrhbbxSbqv2-OLB6wqT0" target="_blank" rel="noopener noreferrer">Télécharger l’enregistrement ONM (MP3) ↗</a>
           <p>Pour l’entendre synchronisé, téléchargez-le puis chargez-le avec <strong>MP3/WAV</strong>. Le synthétiseur et le métronome intégrés fonctionnent sans ce fichier.</p>
@@ -1710,6 +1739,7 @@
     // =========================================================================
     const TOTAL_MEASURES = 62;
     const BASE_BPM = 100;
+    const CUE_NOTICE_LEAD_BEATS = 4;
 
     const SECTIONS = [
       { id: "s1", label: "Intro/C1 (m.1)", start: 1, end: 8 },
@@ -1724,9 +1754,9 @@
     ];
 
     const MAJOR_CUES = [
-      { measure: 5, text: "Mes. 5 : Entrée Hautbois, Clar. 1 & Basson (p/pp)" },
+      { measure: 6, text: "Mes. 6 : Entrée Hautbois, Clar. 1 & Basson (p/pp)" },
       { measure: 9, text: "Mes. 9 : Couplet 2 (mp) + crescendo sur « in the hanging tree »" },
-      { measure: 13, text: "Mes. 13 : Entrée Flûte 1 (p) & Hautbois (mp)" },
+      { measure: 14, text: "Mes. 14 : Entrée Flûte 1 (p) & Hautbois (mp)" },
       { measure: 17, text: "Mes. 17 : Point d'orgue (t.2) + Timbales & Grosse Caisse (f) !" },
       { measure: 18, text: "Mes. 18 : Entrée Piccolo, Cors, Tpt 2 & crescendo vers f" },
       { measure: 25, text: "Mes. 25 : Roulement Timbales/Cymbale -> Explosion TUTTI (ff) !" },
@@ -1813,7 +1843,7 @@
             action = "Donner l'entrée de la Flûte 1 (p) et du Hautbois (mp) sur le 1er temps.";
             instruments = "+ Entrée Flûte 1 (p) & Hautbois (mp) à l'octave";
           } else {
-            lyrics = m === 10 ? "« are you co-ming to the tree? »" : (m === 11 ? "« Where I told you to run, »" : (m === 12 ? "« so we'd both be free. »" : (m === 15 ? "« If we met, »" : "« at mid-night »")));
+            lyrics = m === 10 ? "« are you co-ming to the tree? »" : (m === 11 ? "« Where I told you to run, »" : (m === 12 ? "« so we'd both be free. »" : (m === 14 ? "« no stran-ger would it be »" : (m === 15 ? "« If we met, »" : "« at mid-night »"))));
             action = m === 16 ? "Préparer la respiration et le point d'orgue de la mesure 17 !" : "Garder l'élan régulier vers le climax du couplet.";
           }
         } else if (m >= 17 && m <= 24) {
@@ -2233,8 +2263,8 @@
         const targetTime = Math.max(0, (measure - 1) * secPerMeasure);
 
         try {
-          // Le fichier de référence reste à BASE_BPM ; le tap tempo ajuste
-          // sa vitesse de lecture sans déplacer les repères de mesure.
+          // Le fichier de référence reste à BASE_BPM ; le choix de vitesse ajuste
+          // sa lecture sans déplacer les repères de mesure.
           this.customAudio.playbackRate = (state.bpm * speed) / BASE_BPM;
 
           // On ne recale le fichier que lors d’un vrai déplacement utilisateur
@@ -2299,7 +2329,6 @@
     const measureSlider = document.getElementById("measureSlider");
     const scrubberLabel = document.getElementById("scrubberLabel");
     const bpmLabel = document.getElementById("bpmLabel");
-    const tapTempoBtn = document.getElementById("tapTempoBtn");
     const sectionPillsRow = document.getElementById("sectionPillsRow");
     const scoreListContainer = document.getElementById("scoreListContainer");
 
@@ -2358,7 +2387,9 @@
     const exerciseHistorySummary = document.getElementById("exerciseHistorySummary");
     const exerciseHistoryList = document.getElementById("exerciseHistoryList");
     const orchestraSvg = document.getElementById("orchestraSvg");
-    const orchestraGroupList = document.getElementById("orchestraGroupList");
+    const orchestraTrashZone = document.getElementById("orchestraTrashZone");
+    const orchestraPresenceCount = document.getElementById("orchestraPresenceCount");
+    const restoreOrchestraBtn = document.getElementById("restoreOrchestraBtn");
     const orchestraDesksLayer = document.getElementById("orchestraDesksLayer");
     const orchestraInfo = document.getElementById("orchestraInfo");
     const simulationInstructions = document.getElementById("simulationInstructions");
@@ -2371,8 +2402,6 @@
     const simulationDynamic = document.getElementById("simulationDynamic");
     const toastMsg = document.getElementById("toastMsg");
     let toastTimer = null;
-    let tapTimes = [];
-    let tapResetTimer = null;
     const exercise = {
       active: false,
       startAt: 0,
@@ -2404,35 +2433,34 @@
     }
 
     function renderOrchestraControls() {
-      orchestraGroupList.innerHTML = "";
-      ORCHESTRA_GROUPS.forEach(group => {
-        const row = document.createElement("div");
-        row.className = "orchestra-group-toggle";
-        const label = document.createElement("label");
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.checked = group.active !== false;
-        checkbox.setAttribute("aria-label", `${group.name} présent`);
-        checkbox.disabled = simulation.active;
-        checkbox.addEventListener("change", () => {
-          group.active = checkbox.checked;
-          renderOrchestraDesks();
-        });
-        label.appendChild(checkbox);
-        const callButton = document.createElement("button");
-        callButton.type = "button";
-        callButton.dataset.groupId = group.id;
-        callButton.textContent = group.name;
-        callButton.setAttribute("aria-label", `Donner le départ à ${group.name}`);
-        callButton.disabled = group.active === false;
-        callButton.addEventListener("click", () => handleOrchestraGroupTap(group));
-        row.append(label, callButton);
-        orchestraGroupList.appendChild(row);
-      });
+      const absentCount = ORCHESTRA_GROUPS.filter(group => group.active === false).length;
+      orchestraPresenceCount.textContent = `${ORCHESTRA_GROUPS.length - absentCount}/${ORCHESTRA_GROUPS.length} présents`;
+      restoreOrchestraBtn.disabled = simulation.active || absentCount === 0;
+      orchestraTrashZone.classList.toggle("is-disabled", simulation.active);
+      orchestraTrashZone.setAttribute("aria-disabled", String(simulation.active));
+    }
+
+    function removeOrchestraGroup(group) {
+      if (simulation.active || group.active === false) return;
+      group.active = false;
+      simulation.message = `${group.name} retiré·e de l’effectif.`;
+      renderOrchestraControls();
+      renderOrchestraDesks();
+      showToast(`${group.name} retiré·e — utilisez la flèche pour tout rétablir.`);
+    }
+
+    function isPointerOverTrash(event) {
+      const bounds = orchestraTrashZone.getBoundingClientRect();
+      return event.clientX >= bounds.left && event.clientX <= bounds.right &&
+        event.clientY >= bounds.top && event.clientY <= bounds.bottom;
     }
 
     function getOrchestraGroup(groupId) {
       return ORCHESTRA_GROUPS.find(group => group.id === groupId);
+    }
+
+    function getCueRank(cue) {
+      return (cue.measure - 1) * 4 + cue.beat;
     }
 
     function getGroupClockPosition(group) {
@@ -2445,12 +2473,13 @@
     function renderOrchestraDesks() {
       orchestraDesksLayer.innerHTML = "";
       ORCHESTRA_GROUPS.forEach(group => {
+        if (group.active === false) return;
         const desk = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        desk.setAttribute("class", `desk-node${group.active === false ? " is-absent" : ""}`);
+        desk.setAttribute("class", "desk-node");
         desk.setAttribute("transform", `translate(${group.x}, ${group.y}) rotate(${group.angle || 0})`);
-        desk.setAttribute("tabindex", group.active === false ? "-1" : "0");
+        desk.setAttribute("tabindex", "0");
         desk.setAttribute("role", "button");
-        desk.setAttribute("aria-label", `${group.name}, ${group.active === false ? "absent" : `présent, ${getGroupClockPosition(group)}`}`);
+        desk.setAttribute("aria-label", `${group.name}, présent, ${getGroupClockPosition(group)}. Appuyez sur Suppr pour retirer ce pupitre.`);
         desk.dataset.groupId = group.id;
 
         const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
@@ -2507,6 +2536,7 @@
           const dx = (event.clientX - drag.startX) * 800 / bounds.width;
           const dy = (event.clientY - drag.startY) * 510 / bounds.height;
           if (Math.abs(dx) + Math.abs(dy) > 4) drag.moved = true;
+          orchestraTrashZone.classList.toggle("is-drop-target", drag.moved && isPointerOverTrash(event));
           if (drag.moved) {
             group.x = Math.max(75, Math.min(725, drag.originX + dx));
             group.y = Math.max(80, Math.min(410, drag.originY + dy));
@@ -2520,7 +2550,13 @@
           }
           if (drag.pointerId !== event.pointerId) return;
           const moved = drag.moved;
+          const droppedInTrash = moved && isPointerOverTrash(event);
           drag = null;
+          orchestraTrashZone.classList.remove("is-drop-target");
+          if (droppedInTrash) {
+            removeOrchestraGroup(group);
+            return;
+          }
           if (moved) {
             desk.setAttribute("aria-label", `${group.name}, présent, ${getGroupClockPosition(group)}`);
             simulation.message = `${group.name} placé·e vers ${getGroupClockPosition(group)}.`;
@@ -2529,7 +2565,10 @@
             handleOrchestraGroupTap(group);
           }
         });
-        desk.addEventListener("pointercancel", () => { drag = null; });
+        desk.addEventListener("pointercancel", () => {
+          drag = null;
+          orchestraTrashZone.classList.remove("is-drop-target");
+        });
         desk.addEventListener("click", event => {
           if (event.detail === 0 && group.active !== false) handleOrchestraGroupTap(group);
         });
@@ -2537,6 +2576,9 @@
           if (group.active !== false && (event.key === "Enter" || event.key === " ")) {
             event.preventDefault();
             handleOrchestraGroupTap(group);
+          } else if (!simulation.active && (event.key === "Delete" || event.key === "Backspace")) {
+            event.preventDefault();
+            removeOrchestraGroup(group);
           }
         });
         orchestraDesksLayer.appendChild(desk);
@@ -2556,9 +2598,10 @@
       simulationDynamic.textContent = SCORE_DATA[state.currentMeasure - 1].dyn;
       startSimulationBtn.textContent = simulation.active ? "Arrêter la simulation" : "Lancer la simulation";
       simulationInstructions.textContent = simulation.active
-        ? "Touchez chaque pupitre doré « ! » avant son entrée. Les pupitres absents sont exclus du score."
+        ? "Les pupitres dorés sont annoncés jusqu’à une mesure avant leur entrée. Touchez-les avant le départ ; les absents sont exclus du score."
         : "Les états suivent chaque mesure de la partition ; lancez la répétition pour vous entraîner aux appels signalés. Les absents sont exclus du score.";
 
+      const currentRank = (state.currentMeasure - 1) * 4 + state.currentBeat;
       const stateCounts = { playing: 0, silent: 0, cued: 0, absent: 0 };
       orchestraDesksLayer.querySelectorAll(".desk-node").forEach(desk => {
         const group = getOrchestraGroup(desk.dataset.groupId);
@@ -2567,9 +2610,11 @@
           simulation.pendingCue.groups.includes(group.id) &&
           !simulation.pendingCue.hitGroups.includes(group.id)
         );
-        const measureCue = !simulation.active && !simulation.finished && SIMULATION_CUES.some(cue =>
-          cue.measure === state.currentMeasure && cue.groups.includes(group.id)
-        );
+        const measureCue = !simulation.active && !simulation.finished && SIMULATION_CUES.some(cue => {
+          const beatsUntilCue = getCueRank(cue) - currentRank;
+          return cue.groups.includes(group.id) && beatsUntilCue >= 0 &&
+            beatsUntilCue <= CUE_NOTICE_LEAD_BEATS;
+        });
         const scoreIsActive = isGroupPlayingInMeasure(group, state.currentMeasure);
 
         const status = group.active === false
@@ -2586,39 +2631,45 @@
         const statusSymbols = { absent: "×", cued: "!", playing: "♪", silent: "—" };
         desk.classList.remove("is-absent", "is-playing", "is-silent", "is-cued");
         desk.classList.add(`is-${status}`);
-        desk.setAttribute("aria-label", `${group.name}, ${statusLabels[status]}`);
+        desk.setAttribute("aria-label", `${group.name}, ${statusLabels[status]}. Appuyez sur Suppr pour retirer ce pupitre.`);
         desk.querySelector(".desk-status-icon text").textContent = statusSymbols[status];
         stateCounts[status]++;
       });
 
-      if (simulation.active && simulation.pendingCue) {
+      if (simulation.active && state.isCountIn) {
+        orchestraInfo.textContent = `Comptage préparatoire ${state.countInBeat + 1}/4 — les appels arrivent après la levée.`;
+      } else if (simulation.active && simulation.pendingCue) {
         const cue = simulation.pendingCue;
         const remaining = cue.groups
           .filter(groupId => !cue.hitGroups.includes(groupId))
           .map(groupId => getOrchestraGroup(groupId).name);
-        const prompt = `${cue.label} — départ : ${remaining.join(", ")}.`;
+        const beatsUntilCue = Math.max(0, cue.rank - currentRank);
+        const timing = beatsUntilCue === 0 ? "maintenant" : `dans ${beatsUntilCue} temps`;
+        const prompt = `À préparer ${timing} — ${cue.label} : ${remaining.join(", ")}.`;
         orchestraInfo.textContent = simulation.message.startsWith("Trop tôt")
           ? `${simulation.message} ${prompt}`
           : prompt;
       } else {
         if (!simulation.finished) {
-          const cueNames = [...new Set(SIMULATION_CUES
-            .filter(cue => cue.measure === state.currentMeasure)
-            .flatMap(cue => cue.groups)
-            .filter(groupId => getOrchestraGroup(groupId).active !== false)
-            .map(groupId => getOrchestraGroup(groupId).name))];
+          const upcomingCue = SIMULATION_CUES.find(cue =>
+            getCueRank(cue) >= currentRank &&
+            cue.groups.some(groupId => getOrchestraGroup(groupId).active !== false)
+          );
+          const beatsUntilCue = upcomingCue ? getCueRank(upcomingCue) - currentRank : null;
+          const cueNames = upcomingCue
+            ? upcomingCue.groups
+              .filter(groupId => getOrchestraGroup(groupId).active !== false)
+              .map(groupId => getOrchestraGroup(groupId).name)
+            : [];
           const counts = `${stateCounts.playing} en jeu · ${stateCounts.silent} silencieux · ${stateCounts.cued} à appeler`;
-          const cueMessage = cueNames.length ? ` Départ : ${cueNames.join(", ")}.` : "";
+          const cueMessage = cueNames.length && beatsUntilCue <= CUE_NOTICE_LEAD_BEATS
+            ? ` ${beatsUntilCue === 0 ? "Départ à donner maintenant" : `À préparer dans ${beatsUntilCue} temps`}: ${cueNames.join(", ")}.`
+            : "";
           orchestraInfo.textContent = `Mesure ${state.currentMeasure} — ${counts}.${cueMessage}`;
         } else {
           orchestraInfo.textContent = simulation.message;
         }
       }
-
-      orchestraGroupList.querySelectorAll("input").forEach(input => { input.disabled = simulation.active; });
-      orchestraGroupList.querySelectorAll("button").forEach(button => {
-        button.disabled = getOrchestraGroup(button.dataset.groupId).active === false;
-      });
     }
 
     function updateSimulationPosition() {
@@ -2639,10 +2690,12 @@
       }
 
       const cue = simulation.cues[simulation.cueIndex];
-      if (!simulation.pendingCue && cue && rank === (cue.measure - 1) * 4 + cue.beat - 1) {
+      const cueRank = cue ? getCueRank(cue) : null;
+      if (!simulation.pendingCue && cue && rank < cueRank &&
+        rank >= Math.max(0, cueRank - CUE_NOTICE_LEAD_BEATS)) {
         simulation.pendingCue = {
           ...cue,
-          rank: (cue.measure - 1) * 4 + cue.beat,
+          rank: cueRank,
           hitGroups: []
         };
         simulation.message = `Préparez le départ : ${cue.label}.`;
@@ -2724,50 +2777,6 @@
       renderOrchestraControls();
       updateSimulationUI("Répétition prête : préparez le premier départ.");
       startPlayback();
-    }
-
-    function registerTapTempo() {
-      const now = performance.now();
-      const previousTap = tapTimes[tapTimes.length - 1];
-
-      // Une pause de plus de deux secondes démarre une nouvelle série de taps.
-      if (previousTap && now - previousTap > 2000) tapTimes = [];
-      tapTimes.push(now);
-      tapTimes = tapTimes.slice(-8);
-
-      clearTimeout(tapResetTimer);
-      tapResetTimer = setTimeout(() => {
-        tapTimes = [];
-        tapTempoBtn.classList.remove("listening");
-      }, 2200);
-      tapTempoBtn.classList.add("listening");
-
-      if (tapTimes.length < 2) {
-        showToast("Tap tempo : encore une pulsation…");
-        return;
-      }
-
-      const intervals = [];
-      for (let i = 1; i < tapTimes.length; i++) {
-        const interval = tapTimes[i] - tapTimes[i - 1];
-        if (interval >= 250 && interval <= 1500) intervals.push(interval);
-      }
-      if (!intervals.length) return;
-
-      // Médiane : un tap accidentel influence moins le résultat qu’une moyenne.
-      const sorted = [...intervals].sort((a, b) => a - b);
-      const middle = Math.floor(sorted.length / 2);
-      const median = sorted.length % 2
-        ? sorted[middle]
-        : (sorted[middle - 1] + sorted[middle]) / 2;
-      state.bpm = Math.round(Math.max(40, Math.min(180, 60000 / median)));
-      state.speed = 1;
-      document.querySelectorAll(".speed-btn").forEach(btn =>
-        btn.classList.toggle("active", btn.dataset.speed === "1")
-      );
-      audioEngine.syncCustomAudio(state.currentMeasure, state.speed, state.isPlaying);
-      updateUI(false);
-      showToast(`Tempo défini à ${state.bpm} BPM`);
     }
 
     // =========================================================================
@@ -3055,11 +3064,26 @@
       actionNowText.textContent = mInfo.action;
 
       // Prochain départ critique
-      const nextCue = MAJOR_CUES.find(c => c.measure > m);
-      if (nextCue) {
-        const diff = nextCue.measure - m;
-        nextCueChip.textContent = diff === 1 ? "Mesure suivante !" : `Dans ${diff} mes.`;
-        nextCueText.textContent = nextCue.text;
+      const currentRank = (m - 1) * 4 + state.currentBeat;
+      const cueCandidates = simulation.active
+        ? simulation.cues.slice(simulation.cueIndex)
+        : SIMULATION_CUES.filter(cue =>
+          cue.groups.some(groupId => getOrchestraGroup(groupId).active !== false)
+        );
+      const nextCue = cueCandidates.find(cue => getCueRank(cue) >= currentRank);
+      if (simulation.active && state.isCountIn) {
+        nextCueChip.textContent = `Levée · ${state.countInBeat + 1}/4`;
+        nextCueText.textContent = "Premier appel après le comptage.";
+      } else if (nextCue) {
+        const beatsUntilCue = getCueRank(nextCue) - currentRank;
+        const isPendingCue = simulation.pendingCue && getCueRank(simulation.pendingCue) === getCueRank(nextCue);
+        const groupsToCall = isPendingCue
+          ? nextCue.groups.filter(groupId => !simulation.pendingCue.hitGroups.includes(groupId))
+          : nextCue.groups.filter(groupId => getOrchestraGroup(groupId).active !== false);
+        nextCueChip.textContent = beatsUntilCue <= CUE_NOTICE_LEAD_BEATS
+          ? (beatsUntilCue === 0 ? "À appeler !" : `Préparer · ${beatsUntilCue} temps`)
+          : `Mesure ${nextCue.measure}`;
+        nextCueText.textContent = `Mes. ${nextCue.measure} — ${nextCue.label}${groupsToCall.length ? ` : ${groupsToCall.map(groupId => getOrchestraGroup(groupId).name).join(", ")}` : ""}`;
       } else {
         nextCueChip.textContent = "Fin du morceau";
         nextCueText.textContent = "Mes. 62 : Coupure nette sur le 4e temps !";
@@ -3337,7 +3361,7 @@
       const audio = audioEngine.customAudio;
       if (!audio || !audioEngine.customAudioReady || !Number.isFinite(audio.currentTime)) return false;
 
-      // Le BPM effectif tient compte du tap tempo et du multiplicateur 70/85/100 %.
+      // Le BPM effectif tient compte du tempo de référence et du multiplicateur 70/85/100 %.
       const effectiveBpm = state.bpm * state.speed;
       const musicalSeconds = Math.max(0, audio.currentTime - state.audioOffset);
       const maxBeats = TOTAL_MEASURES * 4 - Number.EPSILON;
@@ -3435,14 +3459,12 @@
 
     resetBtn.addEventListener("click", () => resetPlayback());
 
-    tapTempoBtn.addEventListener("click", registerTapTempo);
     document.addEventListener("keydown", (event) => {
       const target = event.target;
       const isTyping = target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable);
-      if (event.code === "Space" && !isTyping) {
+      if (event.code === "Space" && !isTyping && exercise.active) {
         event.preventDefault();
-        if (exercise.active) scoreExerciseTap();
-        else registerTapTempo();
+        scoreExerciseTap();
       }
     });
 
@@ -3541,6 +3563,16 @@
     });
 
     startSimulationBtn.addEventListener("click", startOrStopSimulation);
+    restoreOrchestraBtn.addEventListener("click", () => {
+      if (simulation.active) return;
+      const restoredCount = ORCHESTRA_GROUPS.filter(group => group.active === false).length;
+      if (!restoredCount) return;
+      ORCHESTRA_GROUPS.forEach(group => { group.active = true; });
+      simulation.message = "Tous les pupitres ont été rétablis.";
+      renderOrchestraControls();
+      renderOrchestraDesks();
+      showToast("Tous les pupitres sont de nouveau présents.");
+    });
 
     // =========================================================================
     // 9. DÉMARRAGE AU CHARGEMENT
