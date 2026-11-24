@@ -52,6 +52,7 @@ function initDOMRefs() {
   refs.openDetailBtn = document.getElementById("openDetailBtn");
   refs.openExerciseBtn = document.getElementById("openExerciseBtn");
   refs.lhGaugeFill = document.getElementById("lhGaugeFill");
+  refs.lhGestureBadge = document.getElementById("lhGestureBadge");
   refs.lhGestureTitle = document.getElementById("lhGestureTitle");
   refs.lhGestureDesc = document.getElementById("lhGestureDesc");
   refs.prompterMeasure = document.getElementById("prompterMeasure");

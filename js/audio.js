@@ -89,6 +89,8 @@ class OrchestraAudioEngine {
     osc.start(now);
     osc.stop(now + 0.21);
     return true;
+  }
+
   /**
    * Joue le son orchestral synthétique pour une mesure et un temps donnés.
    * Génère des nappes harmoniques, des percussions (timbales, grosse caisse, caisse claire)
@@ -259,4 +261,3 @@ class OrchestraAudioEngine {
 
 /** Instance unique du moteur audio */
 const audioEngine = new OrchestraAudioEngine();
-  }

@@ -74,6 +74,8 @@ function getChordForMeasure(m) {
   if (m <= 57) return [116.54, 174.61, 233.08, 293.66]; // Bb
   if (m <= 60) return [130.81, 196.00, 261.63, 329.63]; // C
   return [146.83, 220.00, 293.66, 349.23]; // Dm Final
+}
+
 /**
  * Construit les données annotées pour chacune des 62 mesures.
  * @returns {Array} Tableau de 62 objets de mesure
@@ -166,7 +168,15 @@ function buildMeasureData() {
         action = "Attention : transition immédiate vers le Pont Instrumental (m.34) !";
         instruments = "Tutti (ff) → transition Pont";
       } else {
-        lyrics = m === 27 ? "« co-ming to the tree? »" : (m === 28 ? "« Where dead man called out »" : (m === 29 ? "« for his love to flee. »" : (m === 30 ? "« Strange things did hap-pen here, »" : (m === 31 ? "« no stran-ger would it be. »" : (m === 32 ? "« If we met, at mid-night »" : "« in the han-ging tree. »"))));
+        const lyricsByMeasure = {
+          27: "« co-ming to the tree? »",
+          28: "« Where dead man called out »",
+          29: "« for his love to flee. »",
+          30: "« Strange things did hap-pen here, »",
+          31: "« no stran-ger would it be. »",
+          32: "« If we met, at mid-night »"
+        };
+        lyrics = lyricsByMeasure[m] || "« in the han-ging tree. »";
         action = "Battue ample et autoritaire ; garder le chœur et les cuivres ensemble.";
         instruments = "Tutti (ff)";
       }
@@ -366,4 +376,3 @@ function buildSimulationCues() {
 
 /** Cues de simulation pré-calculés au chargement */
 const SIMULATION_CUES = buildSimulationCues();
-}

@@ -91,6 +91,8 @@ function updateExerciseUI() {
     refs.exerciseLiveFeedback.textContent = "—";
   }
   refs.startExerciseBtn.textContent = exercise.active ? "Arrêter l'exercice" : "Démarrer l'exercice";
+}
+
 /**
  * Démarre ou arrête une session d'exercice de battue.
  * Quand l'exercice démarre, le comptage de 4 temps prépare l'utilisateur.
@@ -196,5 +198,4 @@ function scoreExerciseTap() {
       : `À corriger — ${score}/100, écart de ${Math.round(absError)} ms.`;
   updateExerciseUI();
   updateExerciseLiveFeedback(performance.now());
-}
 }

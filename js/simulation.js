@@ -65,6 +65,8 @@ function getGroupClockPosition(group) {
   const halfHours = Math.round(degrees / 15) % 24;
   const hour = Math.floor(halfHours / 2) || 12;
   return `${hour} h${halfHours % 2 ? " 30" : ""}`;
+}
+
 /**
  * Rend les pupitres d'orchestre sur le plan SVG.
  * Crée un élément <g> par pupitre avec gestion du drag & drop, du clic et du clavier.
@@ -403,5 +405,4 @@ function startOrStopSimulation() {
   renderOrchestraDesks();
   updateSimulationUI();
   showToast("Simulation démarrée — soyez prêt à appeler les pupitres !");
-}
 }

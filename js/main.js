@@ -7,7 +7,6 @@
  * Initialise les références DOM, rend l'interface et démarre la boucle d'animation.
  */
 window.onload = function () {
-  initDOMRefs();
   renderSectionPills();
   renderScoreList();
   renderOrchestraControls();
@@ -20,6 +19,9 @@ window.onload = function () {
 /* ============================================================================
    EVENT LISTENERS — Contrôle de lecture
    ============================================================================ */
+
+// Les scripts sont chargés en bas du document : toutes les références DOM sont disponibles.
+initDOMRefs();
 
 // Bouton Play / Pause
 refs.playPauseBtn.addEventListener("click", () => {
@@ -38,6 +40,8 @@ document.addEventListener("keydown", (event) => {
     event.preventDefault();
     scoreExerciseTap();
   }
+});
+
 /* ============================================================================
    EVENT LISTENERS — Tempo, métronome, boucle, audio
    ============================================================================ */
@@ -166,5 +170,4 @@ refs.restoreOrchestraBtn.addEventListener("click", () => {
   renderOrchestraControls();
   renderOrchestraDesks();
   showToast("Tous les pupitres sont de nouveau présents.");
-});
 });

@@ -108,6 +108,8 @@ function jumpToMeasure(m, autoScroll = false) {
 
   triggerBeat(m, 0, false);
   updateUI(autoScroll);
+}
+
 /**
  * Déclenche les actions pour un temps donné (mesure, battement).
  * Joue le métronome et le son orchestral, fait flasher l'ictus visuel,
@@ -313,5 +315,4 @@ function animationLoop() {
 
   drawConductingCanvas();
   requestAnimationFrame(animationLoop);
-}
 }
