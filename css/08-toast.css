@@ -1,0 +1,20 @@
+/* ============================================================================
+   08-toast.css — Toast de notification et médias queries finales
+   ============================================================================ */
+
+.toast-msg {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--bg-elevated);
+  color: var(--text-main);
+  border: 1px solid var(--accent-amber);
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  z-index: 60;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}

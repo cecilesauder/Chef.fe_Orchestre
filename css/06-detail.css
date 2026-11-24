@@ -1,0 +1,160 @@
+/* ============================================================================
+   06-detail.css — Modale détail (suite) et exercice
+   ============================================================================ */
+
+/* Modale exercice */
+.exercise-modal-box {
+  max-width: 620px;
+}
+
+.exercise-hero {
+  text-align: center;
+  padding: 8px 0 14px;
+}
+
+.exercise-score {
+  font-size: 48px;
+  line-height: 1;
+  font-weight: 900;
+  color: var(--accent-amber);
+  font-family: ui-monospace, monospace;
+}
+
+.exercise-status {
+  min-height: 20px;
+  margin-top: 8px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.exercise-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.exercise-stat {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 9px 6px;
+  text-align: center;
+}
+
+.exercise-stat strong {
+  display: block;
+  color: var(--text-main);
+  font-size: 18px;
+  font-family: ui-monospace, monospace;
+}
+
+.exercise-stat span {
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+.exercise-tap-btn {
+  width: 100%;
+  min-height: 56px;
+  margin-top: 10px;
+  background: var(--accent-amber);
+  border-color: var(--accent-amber);
+  color: #090d16;
+  font-size: 15px;
+}
+
+.exercise-tap-btn.active {
+  box-shadow: 0 0 0 4px rgba(169, 105, 115, 0.2);
+}
+
+.exercise-tap-btn.on-time { background: var(--accent-emerald); border-color: var(--accent-emerald); }
+.exercise-tap-btn.early { background: var(--accent-sky); border-color: var(--accent-sky); }
+.exercise-tap-btn.late { background: var(--accent-rose); border-color: var(--accent-rose); color: #fff; }
+
+.exercise-live-feedback {
+  min-height: 24px;
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 800;
+  font-family: ui-monospace, monospace;
+  transition: color 0.12s ease;
+}
+
+.exercise-live-feedback.on-time { color: var(--accent-emerald); }
+.exercise-live-feedback.early { color: var(--accent-sky); }
+.exercise-live-feedback.late { color: var(--accent-rose); }
+
+.exercise-feedback-guide {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.28);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.exercise-feedback-guide strong { font-weight: 800; }
+.exercise-feedback-guide .guide-on-time { color: var(--accent-emerald); }
+.exercise-feedback-guide .guide-early { color: var(--accent-sky); }
+.exercise-feedback-guide .guide-late { color: var(--accent-rose); }
+
+.exercise-history {
+  margin-top: 14px;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 12px;
+}
+
+.exercise-history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 7px;
+}
+
+.exercise-history-header strong {
+  color: var(--text-muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.exercise-history-summary {
+  color: var(--accent-sky);
+  font-size: 11px;
+  margin-bottom: 7px;
+}
+
+.exercise-history-list {
+  display: grid;
+  gap: 5px;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.exercise-history-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: var(--bg-card);
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.exercise-history-row strong {
+  color: var(--text-main);
+  font-family: ui-monospace, monospace;
+}
+
+.exercise-history-empty {
+  color: var(--text-dim);
+  font-size: 11px;
+  padding: 5px 0;
+}

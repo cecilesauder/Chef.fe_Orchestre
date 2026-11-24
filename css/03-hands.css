@@ -1,0 +1,86 @@
+/* ============================================================================
+   03-hands.css — Panneau des deux mains (partie 1 : structure et cartes)
+   ============================================================================ */
+
+.hands-stage-wrapper {
+  flex-shrink: 0;
+  background-color: var(--bg-app);
+  padding: 8px 12px 4px 12px;
+}
+
+.hands-stage-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 8px;
+  height: 235px;
+}
+
+/* La main gauche se lit à gauche ; la main droite (baguette) à droite. */
+.hands-stage-grid > .panel-card:first-child {
+  grid-column: 2;
+}
+
+.hands-stage-grid > .panel-card:last-child {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+@media (max-width: 640px) {
+  .hands-stage-grid {
+    grid-template-columns: 1fr 1fr;
+    height: 205px;
+  }
+  .brand-sub {
+    display: none;
+  }
+  .panel-header {
+    flex-wrap: wrap;
+  }
+  .panel-header > .panel-label {
+    flex: 1 1 100%;
+  }
+  .panel-header-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  .panel-header-actions .dynamic-pill {
+    display: none;
+  }
+  .panel-header-actions button {
+    min-height: 32px;
+    padding: 5px 7px;
+    font-size: 10px;
+  }
+}
+
+.panel-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  margin-bottom: 4px;
+  flex-shrink: 0;
+}
+
+.panel-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}

@@ -1,0 +1,160 @@
+/* ============================================================================
+   02-header.css — Header, transport bar, section pills, scrubber
+   ============================================================================ */
+
+.app-header {
+  flex-shrink: 0;
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 8px 12px;
+  z-index: 20;
+}
+
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.header-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.brand-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #a96873, #70444d);
+  color: #090d16;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.brand-title {
+  font-size: 14px;
+  font-weight: 800;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.brand-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.transport-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-play {
+  background-color: var(--accent-amber);
+  border-color: var(--accent-amber);
+  color: #090d16;
+  font-weight: 800;
+  padding: 7px 12px;
+}
+
+.btn-play:hover {
+  background-color: #b9858c;
+}
+
+.speed-group {
+  display: inline-flex;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+  gap: 2px;
+}
+
+.speed-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  padding: 4px 7px;
+  font-size: 11px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.speed-btn.active {
+  background-color: var(--bg-elevated);
+  color: var(--accent-amber);
+}
+
+.btn-toggle-on {
+  border-color: rgba(169, 105, 115, 0.5);
+  background-color: rgba(169, 105, 115, 0.14);
+  color: #d1afb3;
+}
+
+.btn-loop-on {
+  border-color: rgba(16, 185, 129, 0.5);
+  background-color: rgba(16, 185, 129, 0.14);
+  color: #6ee7b7;
+}
+
+.section-pills {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.section-pills::-webkit-scrollbar {
+  display: none;
+}
+
+.pill-btn {
+  white-space: nowrap;
+  padding: 4px 9px;
+  font-size: 11px;
+  border-radius: 999px;
+  background-color: var(--bg-card);
+  border-color: var(--border-subtle);
+  color: var(--text-muted);
+}
+
+.pill-btn.active {
+  background-color: var(--accent-amber-soft);
+  border-color: rgba(169, 105, 115, 0.5);
+  color: #d1afb3;
+}
+
+.scrubber-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--text-muted);
+}
+
+.scrubber-row input[type="range"] {
+  flex: 1;
+  height: 5px;
+  accent-color: var(--accent-amber);
+  cursor: pointer;
+}

@@ -2,10 +2,46 @@
 
 Application web pédagogique pour s’entraîner à diriger l’arrangement de *The Hanging Tree* interprété par l’Orchestre du Nouveau Monde.
 
+## Organisation des fichiers
+
+Le projet a été réorganisé en plusieurs fichiers pour améliorer la lisibilité et la maintenabilité. L’unique fichier `index.html` de plus de 3 500 lignes a été découpé en 19 fichiers modulaires :
+
+```
+Chef.fe_Orchestre/
+├── index.html                # HTML uniquement (structure, pas de CSS ni de JS inline)
+├── README.md
+├── css/
+│   ├── 01-variables.css      # Variables CSS (couleurs, espacements), reset, boutons communs
+│   ├── 02-header.css         # Header, barre de transport, pilules de section, curseur de mesure
+│   ├── 03-hands.css          # Panneau des deux mains, canvas de battue, prompteur
+│   ├── 04-score.css          # Conducteur annoté et lignes de mesure
+│   ├── 05-modals.css         # Modales de base (backdrop, boîte, guide 4/4)
+│   ├── 06-detail.css         # Modale détail et modale exercice
+│   ├── 07-orchestra.css      # Section orchestre / simulation des pupitres
+│   └── 08-toast.css          # Toast de notification et médias queries finales
+└── js/
+    ├── state.js              # État global (state, exercise, simulation)
+    ├── refs.js               # Références DOM, initDOMRefs(), showToast()
+    ├── data.js               # Données de la partition (62 mesures, pupitres, cues, accords)
+    ├── audio.js              # Moteur audio Web Audio API (synthé, métronome, MP3/WAV)
+    ├── playback.js           # Contrôle de lecture, timing, animationLoop
+    ├── ui.js                 # Rendu interface (pilules, liste des mesures, détail)
+    ├── canvas.js             # Dessin animé de la battue à 4 temps (main droite)
+    ├── simulation.js         # Simulation des pupitres d'orchestre (répétition)
+    ├── exercise.js           # Exercice de battue en temps réel
+    └── main.js               # Initialisation et event listeners
+```
+
+### Rôle de chaque dossier
+
+- **`css/`** : toutes les feuilles de styles, découpées par zone fonctionnelle (header, mains, score, modales, orchestre, toast). Les numéros préfixés garantissent l'ordre de chargement.
+- **`js/`** : tous les scripts JavaScript, organisés par responsabilité. L'ordre de chargement dans `index.html` respecte les dépendances entre modules.
+
 ## Lancer l’application
 
 - Version publiée : <https://cecilesauder.github.io/Chef.fe_Orchestre/>
 
+Ouvrez simplement `index.html` dans un navigateur moderne. Aucun serveur n'est requis.
 
 ## Fonctionnalités
 
