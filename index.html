@@ -4,19 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Studio de Direction — The Hanging Tree (ONM)</title>
-  <link rel="stylesheet" href="css/01-variables.css" />
-  <link rel="stylesheet" href="css/02-header.css" />
-  <link rel="stylesheet" href="css/03-hands.css" />
-  <link rel="stylesheet" href="css/04-score.css" />
-  <link rel="stylesheet" href="css/05-modals.css" />
-  <link rel="stylesheet" href="css/06-detail.css" />
-  <link rel="stylesheet" href="css/07-orchestra.css" />
-  <link rel="stylesheet" href="css/08-toast.css" />
+    <link rel="stylesheet" href="css/app.css" />
 </head>
 <body>
-  <!-- ========================================================================
+
+  <!-- =====================================================================
        ZONE 1 : HEADER COMPACT FIXE EN HAUT
-       ======================================================================== -->
+       ===================================================================== -->
   <header class="app-header">
     <div class="header-inner">
       <div class="header-top">
@@ -32,34 +26,46 @@
             <p class="brand-sub">Arr. Juliette Penin • 62 mesures • 4/4 • 100 BPM</p>
           </div>
         </div>
+
         <div class="transport-bar">
+          <!-- Lecture / Pause -->
           <button id="playPauseBtn" class="btn-play">
             <svg id="iconPlay" width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
             <svg id="iconPause" class="hidden" width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
             <span id="playBtnText">Démarrer (Levée)</span>
           </button>
+
+          <!-- Reset -->
           <button id="resetBtn" title="Retour mesure 1">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>
             </svg>
           </button>
+
+          <!-- Sélecteur de Tempo -->
           <div class="speed-group">
             <button class="speed-btn" data-speed="0.7">70%</button>
             <button class="speed-btn" data-speed="0.85">85%</button>
             <button class="speed-btn active" data-speed="1">100%</button>
           </div>
+
+          <!-- Clic Métronome -->
           <button id="metroBtn" class="btn-toggle-on">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
               <path d="M12 2L6 21h12L12 2z"/><path d="M12 18l5-9"/>
             </svg>
             <span>Clic: <strong id="metroText">ON</strong></span>
           </button>
+
+          <!-- Boucle Section -->
           <button id="loopBtn">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
             </svg>
             <span>Boucle: <strong id="loopText">OFF</strong></span>
           </button>
+
+          <!-- Import MP3/WAV -->
           <label for="audioFileInput" class="btn" title="Charger un enregistrement MP3 ou WAV">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
@@ -68,6 +74,8 @@
           </label>
           <input type="file" id="audioFileInput" accept="audio/*" class="hidden" />
           <button id="clearMp3Btn" class="hidden" title="Revenir au synthétiseur intégré">✕</button>
+
+          <!-- Guide 4/4 -->
           <button id="openGuideBtn">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
@@ -76,7 +84,11 @@
           </button>
         </div>
       </div>
+
+      <!-- Barre de sélection rapide des sections -->
       <div class="section-pills" id="sectionPillsRow"></div>
+
+      <!-- Barre de progression des mesures -->
       <div class="scrubber-row">
         <span>Mes. <strong id="scrubberLabel" style="color:#fff;">1</strong>/62</span>
         <input type="range" id="measureSlider" min="1" max="62" value="1" step="1" />
@@ -84,16 +96,18 @@
       </div>
     </div>
   </header>
-  <!-- ========================================================================
+
+  <!-- =====================================================================
        ZONE 2 : PANNEAU DES DEUX MAINS STRICTEMENT FIXE (TOUJOURS VISIBLE)
-       ======================================================================== -->
+       ===================================================================== -->
   <section class="hands-stage-wrapper">
     <div class="hands-stage-grid">
+      
       <!-- CÔTÉ GAUCHE : MAIN DROITE (Battue 4/4 animée) -->
       <div class="panel-card">
         <div class="panel-header">
           <span class="panel-label">Main Droite • Battue 4/4</span>
-          <span id="rightHandMode" style="font-size:10px; font-weight:700; color:#a96873;">Petite &amp; précise</span>
+          <span id="rightHandMode" style="font-size:10px; font-weight:700; color:#a96873;">Petite & précise</span>
         </div>
         <div class="canvas-box" id="canvasBox">
           <div class="beat-pills">
@@ -104,6 +118,8 @@
           </div>
           <canvas id="conductingCanvas"></canvas>
           <div class="amp-tag" id="ampTag">Amplitude : ppp</div>
+
+          <!-- Overlay Levée / Préparation (4 temps avant m.1) -->
           <div id="countInOverlay" class="countin-overlay hidden">
             <span style="font-size:10px; font-weight:800; text-transform:uppercase; color:#a96873;">Levée de préparation</span>
             <div class="countin-num" id="countInNum">1</div>
@@ -111,41 +127,51 @@
           </div>
         </div>
       </div>
+
       <!-- CÔTÉ DROIT : MAIN GAUCHE + PROMPTEUR IMMÉDIAT -->
       <div class="panel-card">
         <div class="panel-header">
-          <span class="panel-label">Main Gauche &amp; Prompteur</span>
+          <span class="panel-label">Main Gauche & Prompteur</span>
           <span class="panel-header-actions" style="display:flex; align-items:center; gap:5px;">
             <span class="dynamic-pill" id="dynamicBadge">ppp / mf</span>
             <button id="openDetailBtn" title="Ouvrir la vue détaillée">Détails</button>
-            <button id="openExerciseBtn" title="Ouvrir l'exercice de battue">Exercice</button>
+            <button id="openExerciseBtn" title="Évaluer la précision du geste" aria-label="Ouvrir l’exercice">Exercice</button>
           </span>
         </div>
+
         <div class="right-hand-body">
+          <!-- Indicateur visuel animé de la Main Gauche -->
           <div class="lh-meter-row">
-            <div class="lh-gauge-track">
+            <div class="lh-gauge-track" title="Hauteur et énergie de la main gauche">
               <div class="lh-gauge-fill" id="lhGaugeFill"></div>
             </div>
             <div class="lh-info">
               <div class="lh-title-row">
-                <span class="lh-gesture-badge" id="lhGestureBadge">—</span>
-                <span id="lhGestureTitle">—</span>
+                <span class="lh-gesture-badge" id="lhGestureTitle">🤚 Paume vers le bas</span>
               </div>
-              <div class="lh-desc" id="lhGestureDesc">—</div>
+              <div class="lh-desc" id="lhGestureDesc">Contenir la nappe ppp (Fl.2, Clar., Cordes) et montrer le départ Tpt 1 / Voix au 2e temps.</div>
             </div>
           </div>
+
+          <!-- Prompteur d'action immédiate -->
           <div class="prompter-box">
             <div class="prompter-top">
-              <span class="measure-counter" id="prompterMeasure">M. 1</span>
-              <span class="next-cue-chip" id="nextCueChip">—</span>
+              <span class="measure-counter" id="prompterMeasure">Mes. 1/62 • Intro/C1</span>
+              <span class="next-cue-chip" id="nextCueChip">Préparer · 1 temps</span>
             </div>
-            <div class="action-now-text" id="actionNowText">—</div>
-            <div class="next-cue-text" id="nextCueText">—</div>
+            <div class="action-now-text" id="actionNowText">
+              Temps 1 doux pour la nappe, puis regard & léger signe à Trompette 1 + Voix sur le 2e temps.
+            </div>
+            <div class="next-cue-text" id="nextCueText">
+              Prochain départ : Mes. 1 — voix et trompette 1
+            </div>
           </div>
         </div>
       </div>
+
     </div>
   </section>
+
   <!-- =====================================================================
        ZONE 3 : CONDUCTEUR ANNOTÉ (DÉFILEMENT ISOLÉ)
        ===================================================================== -->
@@ -362,19 +388,8 @@
     </div>
   </div>
 
-  <!-- Toast de notification -->
   <div id="toastMsg" class="toast-msg hidden"></div>
 
-  <!-- Scripts modulaires (chargés dans l'ordre des dépendances) -->
-  <script src="js/state.js"></script>
-  <script src="js/refs.js"></script>
-  <script src="js/data.js"></script>
-  <script src="js/audio.js"></script>
-  <script src="js/playback.js"></script>
-  <script src="js/ui.js"></script>
-  <script src="js/canvas.js"></script>
-  <script src="js/simulation.js"></script>
-  <script src="js/exercise.js"></script>
-  <script src="js/main.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>
